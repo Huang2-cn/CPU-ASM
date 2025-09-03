@@ -207,10 +207,10 @@ section .text
             xor edx,edx
             xor eax,eax
             xor bh,bh
+            xor dx,dx
             mov ax,[CPU_Freq]
             mov bl,[Multi_Freq]
             div bx
-            xor ah,ah
             mov [BUS_Freq],ax
             mov esi,BCLK
             call hex2dec

@@ -3,16 +3,16 @@ global main
 [bits 16]
 [org 0]
 main:
-    nop
-    nop
-    nop
+    nop              ;给NTFS磕三个头
+    nop              ;第二个
+    nop              ;第三个
     mov ax,cs        ;把cs寄存器的值拿出来
     add ax,10        ;加上10
-    mov ss,ax        ;再给栈段寄存器,就不怕覆盖数据了
+    mov ss,ax        ;再给栈段寄存器
     mov sp,0ffffh    ;初始化栈指针
     call getip
         getip:       ;变相获得ip寄存器的值
-            pop di   ;放到di里(反正di我也不怎么用)
+            pop di   ;放到di里(作为全局偏移量保证兼容性)
             mov ax,$-main    ;减去getip之前的机器码长度    
             inc di
             sub di,ax
