@@ -18,13 +18,29 @@ main:
             sub di,ax
     mov ax,cs
     mov ds,ax           ;初始化数据段寄存器
+    MOV AH,00h
+    MOV AL,03h ; 80x25 16色文本模式
+    INT 10H
     mov ax,0b800h
     mov es,ax
     mov si,0
     mov bx,information
+    mov cl,10001010b
     call pstr
-    
-        ;加载32位代码过程   
+    push di
+    mov di,1000h          ;临时用于存储VESA检测信息，等会会被32位代码覆盖
+    mov ax,4F00h
+    int 10h
+    pop di
+    cmp dword [es:1000h],'VESA'
+        jne  no_vesa
+    mov ax,0b800h
+    mov es,ax
+    mov si,160d
+    mov bx,support_vesa
+    mov cl,10001010b
+    call pstr
+        ;加载32位代码过程 
         cli         ;屏蔽外部中断
             mov ax,100h
             mov es,ax
@@ -40,9 +56,13 @@ main:
                 add si,4
                 stosd
             jmp move_code
-         information:   db  'Boot Succeed,If pause in this screen too long,your graphic may not support VESA 2.0 mode!',0
+         information:   db  'Boot Succeed.' ,0
+         support_vesa:  db  'Your graphic supported VESA 2.0.',0
+         unsupport_vesa:db  'Your graphic NOT supported VESA 2.0!!!',0
+         
     pstr:
         add bx,di
+    pstr_loop:
         mov al,ds:[bx]
         cmp al,0
         jne pstr_next
@@ -50,12 +70,20 @@ main:
         pstr_next:
         call pchar
         inc bx
-    jmp pstr
+    jmp pstr_loop
     pchar:
         mov es:[si],al
         inc si
-        mov es:[si],byte 10001010b
+        mov es:[si],cl
         inc si
     ret
+    no_vesa:    
+        mov ax,0b800h
+        mov es,ax
+        mov si,160d
+        mov bx,unsupport_vesa
+        mov cl,10001100b
+        call pstr
+       jmp $
 ;16位代码与数据部分结束     
 start_32_bit:

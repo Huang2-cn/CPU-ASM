@@ -3,7 +3,6 @@ section .text
 %include "display_CPU.asm"
 %include "CPU_Intel.asm"
 %include "CPU_AMD.asm"
-
     serial_out:                 ;串口输出字符串,esi指向字符串
         push dx
         push ax

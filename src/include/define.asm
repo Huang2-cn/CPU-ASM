@@ -1,6 +1,6 @@
 %include "video_define.asm"     ;视频内存位置定义
 
-serial_debug equ 1       ;串口调试,1=启用
+serial_debug equ 0       ;串口调试,1=启用
 serial_port equ 3f8h
 
 %macro serial_print 1   ;格式:serial_print 字符串地址

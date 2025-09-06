@@ -28,7 +28,7 @@ main_32:
             mov [video_endian_addr],ebx
         lgdt [gdt_reg]
         mov ax,4f02h ;设置显示模式
-        mov bx,4105h
+        mov bx,105h
         int 10h
         mov eax,cr0
         or eax,1                                ;设置PE位
