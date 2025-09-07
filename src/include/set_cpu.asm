@@ -26,9 +26,6 @@
             mov [Specification_name+40],ecx
             mov [Specification_name+44],edx
             CPU_NOT_SUPPORT_EXTENDED_CPUID:
-            %if serial_debug = 1
-                serial_print CPUVendor_Info
-            %endif
             
             
             
@@ -74,6 +71,9 @@
             
             
     Corp_Process_fin:
+            %if serial_debug = 1
+                serial_print CPUVendor_Info
+            %endif
     
     call dis_window_basic_info
     call dis_window_function_info

@@ -19,7 +19,7 @@ main:
     mov ax,cs
     mov ds,ax           ;初始化数据段寄存器
     MOV AH,00h
-    MOV AL,03h ; 80x25 16色文本模式
+    MOV AL,03h          ; 80x25 16色文本模式
     INT 10H
     mov ax,0b800h
     mov es,ax

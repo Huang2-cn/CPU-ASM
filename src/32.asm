@@ -10,8 +10,26 @@ main_32:
         mov ax,0
         mov ds,ax
         mov [BOOTDISK],dl
+
+        lgdt [gdt_reg]
+        mov ax,4f02h ;设置显示模式
+        mov bx,4105h
+        int 10h
+        mov ax,4f03h ;检测当前显示模式
+        int 10h
+        mov [DMOD],bx
+        cmp bx,4105h
+        je set_display_succeed
+            mov ax,4f02h
+            mov bx,4116h
+            int 10h
+            mov ax,4f03h ;检测当前显示模式
+            int 10h
+            mov [DMOD],bx
+            mov [V16BPP],byte 1
+        set_display_succeed:
         mov ax,4f01h
-        mov cx,105h
+        mov cx,[DMOD]
         mov di,0h            ;偏移
         int 10h             ;通过VesaBIOS中断获取显示模式相关信息
             mov ebx,[video_phy_addr]
@@ -24,12 +42,13 @@ main_32:
             mov [video_screen_width],eax
             mul edx
             mov ebx,[video_base_addr]
+            
+            cmp [V16BPP],byte 0
+                je vna_256             ;如果是256色模式,则跳过
+                shl eax,1              ;否则显存每像素大小是二倍
+            vna_256:
             add ebx,eax
             mov [video_endian_addr],ebx
-        lgdt [gdt_reg]
-        mov ax,4f02h ;设置显示模式
-        mov bx,105h
-        int 10h
         mov eax,cr0
         or eax,1                                ;设置PE位
         mov cr0,eax
@@ -107,12 +126,34 @@ main_32:
             mov al,1011b
             out dx,al
                 %if serial_debug = 1
+                    pushad
+                    
+                    mov eax,[video_base_addr]
+                    mov esi,SDB_VAD_VALUE
+                    call dword_hex
+                    
+
+                    mov bx,[DMOD]
+                    mov al,bh
+                    call hex2ascii
+                    mov [SDB_CDM_VALUE],ax   
+                    mov al,bl                 
+                    call hex2ascii
+                    mov [SDB_CDM_VALUE+2],ax
                     serial_print SDB_INFO
+                    
+                    mov al,V16BPP
+                    cmp [V16BPP],byte 0
+                    je SDB_N16BPP
+                        serial_print SDB_16BPP
+                    SDB_N16BPP:
+                    popad
                 %endif
             
-            sti                 ;启用中断
+
+            ;sti                 ;启用中断
             mov al,0f0h
-            call clean_screen 
+            call clean_screen  
             %include "set_cpu.asm"
             jmp $
         endian:
