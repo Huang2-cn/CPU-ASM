@@ -5,50 +5,12 @@ global main_32
 main_32:
     [bits 16]
     enter_32:
-        mov ax,90h         ;存储VESA信息的段基址
+        mov ax,90h 
         mov es,ax
         mov ax,0
         mov ds,ax
         mov [BOOTDISK],dl
-
         lgdt [gdt_reg]
-        mov ax,4f02h ;设置显示模式
-        mov bx,4105h
-        int 10h
-        mov ax,4f03h ;检测当前显示模式
-        int 10h
-        mov [DMOD],bx
-        cmp bx,4105h
-        je set_display_succeed
-            mov ax,4f02h
-            mov bx,4116h
-            int 10h
-            mov ax,4f03h ;检测当前显示模式
-            int 10h
-            mov [DMOD],bx
-            mov [V16BPP],byte 1
-        set_display_succeed:
-        mov ax,4f01h
-        mov cx,[DMOD]
-        mov di,0h            ;偏移
-        int 10h             ;通过VesaBIOS中断获取显示模式相关信息
-            mov ebx,[video_phy_addr]
-            mov [video_base_addr],ebx
-            xor eax,eax
-            xor edx,edx
-            mov ax,[screen_width]           ;屏幕宽度
-            mov dx,[screen_height]          ;屏幕高度
-            mov [video_screen_height],edx
-            mov [video_screen_width],eax
-            mul edx
-            mov ebx,[video_base_addr]
-            
-            cmp [V16BPP],byte 0
-                je vna_256             ;如果是256色模式,则跳过
-                shl eax,1              ;否则显存每像素大小是二倍
-            vna_256:
-            add ebx,eax
-            mov [video_endian_addr],ebx
         mov eax,cr0
         or eax,1                                ;设置PE位
         mov cr0,eax
@@ -79,7 +41,6 @@ main_32:
                     add esi,4
                     jmp initialize_MEM
                 initialize_MEM_Finished:
-            %include "set_palette.asm"
             %include "set_8259.asm"
             
             call test_keyboard
@@ -129,7 +90,7 @@ main_32:
                     pushad
                     
                     mov eax,[video_base_addr]
-                    mov esi,SDB_VAD_VALUE
+                    mov esi,SDB_TEMP
                     call dword_hex
                     
 
@@ -141,23 +102,22 @@ main_32:
                     call hex2ascii
                     mov [SDB_CDM_VALUE+2],ax
                     serial_print SDB_INFO
-                    
-                    mov al,V16BPP
-                    cmp [V16BPP],byte 0
-                    je SDB_N16BPP
-                        serial_print SDB_16BPP
-                    SDB_N16BPP:
+                    serial_print SDB_CDM
                     popad
                 %endif
-            
-
-            ;sti                 ;启用中断
-            mov al,0f0h
-            call clean_screen  
+                call load_driver_1024_256
+                    cmp eax,1           ;判断设定是否成功
+                jne FINISH_LOAD_DRIVER
+                call load_driver_16BPP
+                    cmp eax,1
+                jne FINISH_LOAD_DRIVER
+                call load_driver_800_256
+            FINISH_LOAD_DRIVER:
+            %include 'ACPI.asm'
+            sti                 ;启用中断
             %include "set_cpu.asm"
-            jmp $
         endian:
-            print_nocheck 0ffh,0fh,stopped_msg
+            prints 0ffh,0fh,stopped_msg
         stop:
             hlt
         jmp stop
@@ -173,8 +133,6 @@ section .data
 chars:
 ;ASCII字模
 %include "ASCII.asm"
-;中文字模
-%include "chinese.asm"
 ;各种描述符
 %include "discribe_table.asm"
 align 4

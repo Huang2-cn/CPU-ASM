@@ -1,20 +1,21 @@
     dis_window_basic_info:
         pushad
-            draw_window 0ah,0ah,80,1004,CPU_INFO
+            draw_window 0ah,0ah,80,780,CPU_INFO
             prints 0h,0FFh,CPUVendor_Info
             mov [print_X],Dword 0b5h
             prints 0h,0FFh,CPU_Specification
-            call br
+            call dword [br]
             prints 0,0FFh,CPU_Family_Info
-            call br
+            mov [print_X],Dword 0b5h
             prints 0,0FFh,CPU_CODE_NAME_Info
+            mov [print_X],Dword 24ch
             prints 0,0FFh,CPU_TECH_Info
         popad
     ret
     
     dis_window_function_info:
         pushad
-            draw_window 0ah,106,120,1004,Function_INFO
+            draw_window 0ah,106,120,780,Function_INFO
             
             mov ecx,64
             mov esi,CPU_FUNCTION
@@ -34,9 +35,9 @@
             mov [Freq_X],eax
             mov eax,[print_Y]
             mov [Freq_Y],eax
-            call br
+            call dword [br]
             prints 0,0FFh,Multiplier_Info
-            call br
+            call dword [br]
             prints 0,0FFh,BCLK_Info
             mov eax,[print_X]
             mov [BCLK_X],eax

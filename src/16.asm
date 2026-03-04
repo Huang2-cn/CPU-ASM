@@ -27,19 +27,6 @@ main:
     mov bx,information
     mov cl,10001010b
     call pstr
-    push di
-    mov di,1000h          ;临时用于存储VESA检测信息，等会会被32位代码覆盖
-    mov ax,4F00h
-    int 10h
-    pop di
-    cmp dword [es:1000h],'VESA'
-        jne  no_vesa
-    mov ax,0b800h
-    mov es,ax
-    mov si,160d
-    mov bx,support_vesa
-    mov cl,10001010b
-    call pstr
         ;加载32位代码过程 
         cli         ;屏蔽外部中断
             mov ax,100h
@@ -56,10 +43,7 @@ main:
                 add si,4
                 stosd
             jmp move_code
-         information:   db  'Boot Succeed.' ,0
-         support_vesa:  db  'Your graphic supported VESA 2.0.',0
-         unsupport_vesa:db  'Your graphic NOT supported VESA 2.0!!!',0
-         
+         information:   db  'Boot Succeed,Loading 32-Bit mode.' ,0
     pstr:
         add bx,di
     pstr_loop:
@@ -77,13 +61,5 @@ main:
         mov es:[si],cl
         inc si
     ret
-    no_vesa:    
-        mov ax,0b800h
-        mov es,ax
-        mov si,160d
-        mov bx,unsupport_vesa
-        mov cl,10001100b
-        call pstr
-       jmp $
 ;16位代码与数据部分结束     
 start_32_bit:

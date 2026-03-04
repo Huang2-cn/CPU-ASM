@@ -49,3 +49,35 @@
         linrsvdmasksize         equ  vesa_data_base + 3ch
         linrsvefieldpos         equ  vesa_data_base + 3dh
         maxpixelclock           equ  vesa_data_base + 3eh
+%define MAX_WINDOW 64
+%define video_buffer 1000000h
+struc win_attr                      ;窗口属性
+    .x           resw    1           ;窗口默认左上角X,若为0ffffh则出现在默认位置
+    .y           resw    1           ;窗口默认左上角Y
+    .w           resw    1           ;宽度
+    .h           resw    1           ;高度
+    .widget      resd    1           ;指向窗口控件列表
+    .title       resd    1           ;指向窗口标题
+endstruc
+
+struc wid_str                       ;窗口控件:字符串
+    .type        resb    1           ;请务必保证为1,这标志这是个字符串!
+    .color       resb    1           ;字符串的前景色
+    .back        resb    1           ;字符串的背景色
+    .tran        resb    1           ;是否透明，若为真，背景色不生效
+    .x           resw    1           ;控件左上角相对于窗口左上角的x位置
+    .y           resw    1           ;同上,y
+    ;不定义大小,由字符串长度及内容自动计算
+    .index       resd    1           ;字符串内容的指针
+    .next_wid    resd    1           ;下一个控件(0则无)
+endstruc
+        
+struc win_chain
+    .closed      resb    1           ;是否已关闭
+    .visible     resb    1           ;是否可视(最小化)，暂时未使用
+    .x           resb    1           ;左上角相对于屏幕的位置,x
+    .y           resb    1           ;同上,y
+    .attr        resd    1           ;应指向窗口属性结构体
+    .pre_win     resd    1           ;指向上一个窗口
+    .next_win    resd    1           ;指向下一个窗口
+endstruc

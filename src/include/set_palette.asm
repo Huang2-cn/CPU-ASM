@@ -26,6 +26,6 @@ colorful_palette:       ;想打世界计划了🤤🤤🤤
  
     jmp set_palette_loop
 finish_set_palette:
-
+ret
 
 

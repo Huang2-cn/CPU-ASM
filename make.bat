@@ -13,7 +13,7 @@ if not exist temp\ (
 	mkdir temp
 	)
 	
-rd /s /q %~1>nul
+del /f /s /q %~1>nul
 .\tool\nasm -f bin .\src\16.asm -o %T16Bit% -l .\temp\16.log -i .\src\include
 .\tool\nasm -f bin .\src\32.asm -o %T32Bit% -l .\temp\32.log -i .\src\include
 if not exist %T16Bit% (
@@ -33,8 +33,8 @@ if %errorlevel% neq 0 (
 if "%~2" == "-nodel" (
 	goto suc
 	)
-rd /s /q %T16Bit% >nul
-rd /s /q %T32Bit% >nul
+del /f /s /q %T16Bit% >nul
+del /f /s /q %T32Bit% >nul
 :suc
 echo ≥…π¶±‡“Î£°
 :endian

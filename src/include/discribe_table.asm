@@ -44,7 +44,9 @@ gdt_reg:
     dw gdt_end - gdt_start - 1 ; GDT长度
     dd gdt_start               ; GDT基址
 
-
+real_mode_idtr:
+        dw 0
+        dd 0
 idtr:
         idt_limit dw 2047           ;段界限
         idt_base  dd idt            ;段基址

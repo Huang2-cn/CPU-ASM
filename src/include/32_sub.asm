@@ -228,3 +228,18 @@ section .text
             mov [print_X],eax
         popad
         ret
+        
+   play:                    ;启动蜂鸣器
+        push ax             ;保存现场
+        in al,61h           ;从61号端口拿来数据
+        or al,0011b         ;PB0和PB1置1，启动蜂鸣器和定时器
+        out 61h,al
+        pop ax              ;还原现场
+   ret                     ;返回
+   stop_play:                    ;关闭蜂鸣器
+        push ax             ;保存现场
+        in al,61h           ;从61号端口拿来数据
+        and al,0fch         ;调整蜂鸣器计时器控制位
+        out 61h,al          ;丢回去
+        pop ax              ;还原现场
+   ret

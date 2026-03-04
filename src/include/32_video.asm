@@ -1,332 +1,45 @@
 section .text
-    video_addr:             ;计算显存地址子程序，ecx=x轴，edx=y轴，完成后edx=地址;已完成16位色适配
-          push eax
-          push ebx
-          mov eax,edx
-          xor ebx,ebx
-          mov bx,[screen_width]
-          mul ebx
-          mov edx,eax  
-          add edx,ecx       ;加上x轴
-          mov eax,[video_base_addr]
-          cmp [V16BPP],byte 0
-          je video_addr_256         ;如果是256色模式,则跳过
-              shl edx,1             ;否则需要乘以2
-          video_addr_256:
-          add edx,eax  ;显存基地址
-          pop ebx
-          pop eax
-    ret
-    draw_pixel:                 ;画像素,将[pixel_color]内存处对应的颜色画在(ecx,edx)，已完成16位色适配
-        push edx
-        push eax
-        xor eax,eax
-        mov al,[pixel_color]
-        call video_addr
-        cmp [V16BPP],byte 0
-          je draw_pixel_256             ;如果是256色模式,则跳过
-              shl eax,1             ;ax乘二获得颜色偏移
-              add eax,palette_data_16bpp
-              mov ax,[eax]
-              mov [edx],ax
-          jmp dp_pass
-        draw_pixel_256:
-            mov [edx],al
-        dp_pass:
-        pop eax
-        pop edx
-    ret
+
+
+
+vfun_err:
+    jmp $
+    
+    
+%include "Driver\Video\Video_800_256.asm"
+%include "Driver\Video\Video_1024_256.asm"
+%include "Driver\Video\Video_16BPP.asm"
+%include "set_palette.asm"
+%include "Driver\Video\Window.asm"
+
+
         
 
 ;===================================================== 
 
-    rectangle:              ;画矩形！al颜色，ecx起始x轴，edx起始y轴，ebx长度，ebp宽度,已完成16位色适配
-                            ;有个关于这个的宏在define.asm里面!!!
-                                ;(ECX,EDX)
-        pushad                  ;    ↓
-                                ;    ┏━━━━━━━━━━━━━━━┓┰
-                                ;    ┃               ┃┃
-                                ;    ┃               ┃EBX
-                                ;    ┃               ┃┃
-                                ;    ┗━━━━━━━━━━━━━━━┛┸
-                                ;    ├───── EBP ─────┤
-                                ;不用等宽字体的活该的说
-        call video_addr
-        mov edi,edx
-        xor ecx,ecx
-        xor edx,edx
-        mov cx,[screen_width]
-        sub ecx,ebp              ;每次换行需增加的偏移
-        inc ebx                  ;循环会减回来
-        cmp [V16BPP],byte 0
-            jne rectangle_16bpp  ;如果是16位色模式
-        rectangle_line:
-            mov edx,ebp          ;将宽度放入edx
-            dec ebx              ;高度减一
-            jz rectangle_ret     ;归零则返回
-            rectangle_line_loop:
-                stosb            ;写入显存
-                dec edx          ;写入了一个像素
-                jnz rectangle_line_loop
-                add edi,ecx
-            jmp rectangle_line
-        rectangle_ret:
-        popad
-     ret    
-        rectangle_16bpp:
-                shl ecx,1               ;偏移须乘二
-                and eax,11111111b       ;只保留AL
-                shl eax,1               ;eax乘二获得颜色偏移
-                add eax,palette_data_16bpp
-                mov ax,[eax]    
-        rectangle_line_16bpp:
-            mov edx,ebp          ;将宽度放入edx
-            dec ebx              ;高度减一
-            jz rectangle_ret     ;归零则返回
-            rectangle_line_loop_16bpp:
-                stosw            ;写入显存
-                dec edx          ;写入了一个像素
-                jnz rectangle_line_loop_16bpp
-                add edi,ecx
-            jmp rectangle_line_16bpp
-                                
-                                
-        clean_screen:           ;清屏，al为清屏颜色,已完成32位色适配
-            push eax
-            push edi
-            push ecx
-            mov ecx,[line_start]
-            mov [print_X],ecx
-            mov dword [print_Y],0
-            mov ah,al
-            mov di,ax
-            shl eax,10h
-            mov ax,di
-            mov edi,[video_base_addr]
-            
-            cmp [V16BPP],byte 0
-                je cls_loop             ;如果是256色模式,则跳过
-                and eax,11111111b       ;只保留AL
-                shl eax,1               ;eax乘二获得颜色偏移
-                add eax,palette_data_16bpp
-                mov ax,[eax]    
-                push ax
-                shl eax,16
-                pop ax
-            cls_loop:
-                stosd
-                cmp edi,[video_endian_addr]
-            jbe cls_loop
-            pop ecx
-            pop edi
-            pop eax
-        ret
-        br:                     ;换行
-            mov edx,[print_Y]
-            mov ecx,[line_start]
-            add edx,10h
-            mov [print_X],ecx
-            mov [print_Y],edx
-        ret
-        
-        
-        print_cn:               ;中文显示，al为颜色，ecx为左上角x轴，edx为左上角y轴,esi指向数据，结束后除ecx为右上角Y轴全都不变
-              pushad            ;全部入栈
-              dec edx           ;循环里会加回来
-              mov ah,0
-              xor ebx,ebx
-              call video_addr
-              push edx
-              xor ebp,ebp
-              mov bp,[screen_width]
-              pcn_loop:
-                cmp bx,0
-                jne pcn_print
-                    pop edi
-                    add edi,ebp
-                    push edi
-                    cmp ah,16d
-                    je pcn_ret
-                    inc ah
-                    mov bx,[esi]
-                    add esi,2      
-                pcn_print:
-                shl bx,1
-                jnc pcn_pass
-                    mov [edi],al
-                pcn_pass:
-                    inc edi
-                    jmp pcn_loop
-            pcn_ret:
-            pop edx
-            popad
-            add ecx,11h
-       ret
-       
-       print_cn_32:            ;大中文显示函数(32*32)，al为颜色，ecx为左上角x轴，edx为左上角y轴,esi指向字模，结束后除ecx为右上角Y轴全都不变
-              pushad            ;全部入栈
-              dec edx           ;循环里会加回来
-              mov ah,0
-              xor ebx,ebx
-              call video_addr
-              push edx
-              xor ebp,ebp
-              mov bp,[screen_width]
-              pcn_32_loop:
-                cmp ebx,0
-                jne pcn_32_print
-                    pop edi
-                    add edi,ebp
-                    push edi
-                    cmp ah,32d
-                    je pcn_32_ret
-                    inc ah
-                    mov ebx,[esi]
-                    add esi,4      
-                pcn_32_print:
-                shl ebx,1
-                jnc pcn_32_pass
-                    mov [edi],al
-                pcn_32_pass:
-                    inc edi
-                    jmp pcn_32_loop
-            pcn_32_ret:
-            pop edx
-            popad
-            add ecx,34h
-       ret
-       
 
-       print:                 ;字符显示函数，al为颜色，ecx为左上角x轴，edx为左上角y轴,bl为ASCII，结束后除ecx为右上角Y轴全都不变;已完成16位色适配
-       ret
-              pushad            ;全部入栈
-              mov ecx,[print_X]
-              mov edx,[print_Y]
-              and ebx,11111111b ;除bl外全部爬！
-              sub ebx,20h
-              shl ebx,4         ;乘以16，得到字模偏移
-              lea esi,chars     ;获得字模基地址
-              add esi,ebx       ;加上偏移,得到字模指针
-              dec edx           ;循环里会加回来
-              xor ebx,ebx       ;清空备用(存储字模当前行)
-              call video_addr   ;计算显存地址
-              push edx
-              xor ebp,ebp
-              mov bp,[screen_width]
-              char_loop:
-                cmp [V16BPP],byte 0
-                jne cl_16bpp  ;如果是16位色模式
-                cmp bl,0      ;是0则该行无内容,前往下一行
-                jne char_print ;否则前往进行输出
-                    pop edi   ;当前高度
-                    add edi,ebp
-                    push edi
-                    cmp bh,10h  ;16则证明已完成当前字
-                    je char_ret
-                    inc bh      ;否则增加行指示
-                    mov bl,[esi];下一行字模
-                    inc esi      
-                char_print:
-                shl bl,1
-                jnc char_pass
-                    mov [edi],al
-                char_pass:
-                    inc edi
-                    jmp char_loop
-            char_ret:
-            pop edx
-            add ecx,08h
-            mov [print_X],ecx
-            popad
-       ret
-            cl_16bpp:  ;如果是16位色模式
-                and eax,11111111b       ;只保留AL
-                shl eax,1               ;eax乘二获得颜色偏移
-                add eax,palette_data_16bpp
-                mov ax,[eax]    
-                shl ebp,1     ;显存偏移乘2
-            char_loop_16bpp:
-                cmp bl,0      ;是0则该行无内容,前往下一行
-                jne char_print_16bpp ;否则前往进行输出
-                    pop edi   ;当前高度
-                    add edi,ebp
-                    push edi
-                    cmp bh,10h  ;16则证明已完成当前字
-                    je char_ret
-                    inc bh      ;否则增加行指示
-                    mov bl,[esi];下一行字模
-                    inc esi      
-                char_print_16bpp:
-                shl bl,1
-                jnc char_pass_16bpp
-                    mov [edi],ax
-                char_pass_16bpp:
-                    inc edi
-                    inc edi
-                    jmp char_loop_16bpp
-              
-        printstr:           ;字符串显示函数，仅支持ASCII，esi指向字符串，al前景色，ecx左上角x，edx左上角y，除ecx=最后的字符位置右上角x其他均不变
+ref_vram:
+pushad
+    
+popad
+ret            
+                                
+
+
+        
+
+
+
+        printstr_back:           ;字符串显示函数，仅支持ASCII，esi指向字符串，al前景色，ah背景色，ecx左上角x，edx左上角y，除ecx=最后的字符位置右上角x其他均不变
             push ebx
             xor ebx,ebx
-            pstr_loop:
+            pstr_back_loop:
                 mov bl,[esi]
                 cmp bl,0
-                je pstr_ret
-                call print
+                    je pstr_ret
+                call dword [print]
                 inc esi
-            jmp pstr_loop
-            pstr_ret:
-            pop ebx
-       ret
-       next_line:
-            add edx,10h
-            mov [print_Y],edx
-       jmp char_control_ret
-       enter_key:
-            mov ecx,[line_start]
-            mov [print_X],ecx
-       char_control_ret:
-            popad
-       ret
-       print_back:              ;字符带背景显示，al为颜色,ah为背景颜色,bl为ascii，ecx为左上角x轴，edx为左上角y轴,bl为ASCII，结束后除ecx为右上角Y轴全都不变,已完成16位色适配
-              pushad            ;全部入栈
-              mov edx,[print_Y]
-              cmp bl,0ah
-              je next_line
-              cmp bl,0dh
-              je enter_key
-              mov ecx,[print_X]
-                pushad              ;清除背景
-                mov al,ah
-                mov ebx,10h
-                mov ebp,9h
-                call rectangle     ;用矩形填充
-                popad
-              sub bl,20h
-              and ebx,11111111b ;除bl外全部爬！
-              shl ebx,4         ;乘以16，得到字模偏移
-              lea esi,chars
-              add esi,ebx
-              dec edx           ;循环里会加回来
-              xor ebx,ebx
-              call video_addr
-              push edx
-              xor ebp,ebp
-              mov bp,[screen_width]
-                jmp char_loop        
-            
-            printstr_back:           ;字符串显示函数，仅支持ASCII，esi指向字符串，al前景色，ah背景色，ecx左上角x，edx左上角y，除ecx=最后的字符位置右上角x其他均不变
-                cmp byte [allow_output],0
-                jne not_allow_output   ;检查是否允许输出
-            pstr_nocheck:
-                push ebx
-                xor ebx,ebx
-                pstr_back_loop:
-                    mov bl,[esi]
-                    cmp bl,0
-                        je pstr_ret
-                    call print_back
-                    inc esi
             jmp pstr_back_loop
-                not_allow_output:           ;不允许输出
-            ret
+        pstr_ret:
+        pop ebx
+        ret

@@ -21,7 +21,8 @@ section .text
             out 21h,al          ;主8259A的数据端口
             nop
             out 0a1h,al         ;从数据
- 
+            sidt [real_mode_idtr]
+                                ;备份实模式IDT
             lidt [idtr]         ;加载IDT表
             xor ebx,ebx         ;ebx清零
             

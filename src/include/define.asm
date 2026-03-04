@@ -1,12 +1,21 @@
-%include "video_define.asm"     ;视频内存位置定义
+%include "Driver\Video\Video_define.asm"     ;视频内存位置定义
+%include "pitch.asm"            ;蜂鸣器曲调定义
 
-serial_debug equ 0       ;串口调试,1=启用
-serial_port equ 3f8h
+enable_beep equ 1        ;启用蜂鸣器,1=启用
+serial_debug equ 1       ;串口调试,1=启用
+serial_port equ 3f8h     ;串口调试端口，3F8=COM1
+
+%if serial_debug = 1
+    %warning "NOW IS A DEBUG VERSION, PLEASE DO NOT RELEASE!!!"
+    %warning "NOW IS A DEBUG VERSION, PLEASE DO NOT RELEASE!!!"
+    %warning "NOW IS A DEBUG VERSION, PLEASE DO NOT RELEASE!!!"
+%endif
 
 %macro serial_print 1   ;格式:serial_print 字符串地址
     mov esi,%1
     call serial_out
 %endmacro
+
 %macro SDB_REG 0
     pushad
     mov esi,SDB_EAX_VALUE
@@ -106,12 +115,14 @@ serial_port equ 3f8h
     mov edx,%5
     call print_hex
 %endmacro
+
 %macro prints 3       ;格式:prints 前景色,背景色,字符串地址
     mov al,%1
     mov ah,%2
     mov esi,%3
     call printstr_back
 %endmacro
+
 %macro printc 2       ;格式:printc 背景色,字符串地址(第一Byte为前景色)
     mov ah,%1
     mov esi,%2
@@ -119,19 +130,21 @@ serial_port equ 3f8h
     inc esi
     call printstr_back
 %endmacro
+
 %macro print_nocheck 3       ;格式:prints 前景色,背景色,字符串地址(忽略是否允许输出)
     mov al,%1
     mov ah,%2
     mov esi,%3
     call pstr_nocheck
 %endmacro
+
 %macro fill_rectangle 5     ;格式:fill_rectangle 颜色,起始x,起始y,长度,宽度
     mov al,%1
     mov ecx,%2
     mov edx,%3
     mov ebx,%4
     mov ebp,%5
-    call rectangle
+    call dword [rectangle]
 %endmacro
 
 %macro pixel 3              ;格式:pixel 颜色,x,y

@@ -10,11 +10,17 @@ ER_CS:              db  "?","?","?","?",0ah,0dh
                     db  "EIP Register:0x"
 ER_EIP:             db  "?","?","?","?","?","?","?","?",0ah,0dh
                     db  0
-
-V16BPP:             db  0                               ;标志是否是16BPP模式
+                    
+                    
+ACPI_RSDP_addr:     dd  0
+ACPI_VER:           db  'N'
+                    
+                    
+                    
 DMOD:               dw  0
                     
-CPU_INFO:           db  0,"CPU infomation",0ah,0dh,0 
+                    
+                    
 Function_INFO:      db  0,"Function infomation",0ah,0dh,0     
 Clock_INFO:         db  0,"Clock infomation",0ah,0dh,0                    
 CPUVendor_Info:     db  "Vendor: "
@@ -26,23 +32,24 @@ CPU_Family_Info:    db  "Family: "
 CPU_Family:         db  0
                     db  "  Model: "
 CPU_Model:          db  0
-                    db  "  Stepping:  "
-CPU_Stepping:       db  0
-                    db  "  EXT. Model: "
-CPU_EXT_Model:      db  0
                     db  "  EXT. Family: "
 CPU_EXT_Family:     dw  0
+                    db  "  EXT. Model: "
+CPU_EXT_Model:      db  0
                     db  "  Display Model: "
 CPU_Dis_Model:      dw  0
                     db  "  Display Family: "
 CPU_Dis_Family:     dw  0
+                    db  0ah,0dh
+                    db  "Stepping:  "
+CPU_Stepping:       db  0
                     db  0
 
 CPU_CODE_NAME_Info: db  "Code name: "
 CPU_CODE_NAME:      db  "Unknown Code name."
                     db  16 dup (0)    
                     
-CPU_TECH_Info:      db  "       Technology: "
+CPU_TECH_Info:      db  "Technology: "
 CPU_TECH:           db  16 dup (0)    
 CPU_Freq_Info:      db  'Frequency: ',0
 Freq:               db  'NaN',0,0,0
@@ -61,33 +68,26 @@ Intel:              db  "GenuineIntel",0
 Intel_Corp:         db  "Intel",0
 AMD:                db  "AuthenticAMD",0   
 AMD_Corp:           db  "AMD",0
-allow_output:       db  0       ;允许输出信息，0为允许
-window_lenth:       dd  0
-line_start:         dd  21
-line_lenth:         dd  0
-video_screen_width: dd  0
-video_screen_height dd  0
-print_Y:            dd  0
-print_X:            dd  0
-pixel_color:        db  0
-video_base_addr:    dd  0
-video_endian_addr:  dd  0
+
 
 
 CPU_Freq:           dw  0  
 Multi_Freq:         db  0
 BUS_Freq:           dw  0
 
-            
+   
+%include "Driver\Video\Video_data.asm"         
 %include "Intel_data.asm"
 %include "AMD_data.asm"
 %if serial_debug = 1
     ;如启用了串口调试的数据
     SDB_INFO:       db   "Serial Port DEBUG is Enabled.", 0ah,0dh
     SDB_VADDR:      db   "Video address Base:"
-    SDB_VAD_VALUE:  db   8 dup (0),0ah,0dh
+    SDB_TEMP:       db   8 dup (0),0ah,0dh,0
     SDB_CDM:        db   "Current Display Mode:"
     SDB_CDM_VALUE:  db   4 dup (0),0ah,0dh,0
+    SDB_NORSDP:     db   "RSDP NOT FOUND." ,0ah,0dh,0
+    SDB_AADDR:      db   "ACPI RSDP Found in:",0
     SDB_UD:         db   "#UD",0
     SDB_GP:         db   "#GP",0
     SDB_DF:         db   "#DF",0
@@ -108,8 +108,11 @@ BUS_Freq:           dw  0
     SDB_ECX:        db   "ECX: "
     SDB_ECX_VALUE:  db   8 dup(0),0ah,0dh
     SDB_EDX:        db   "EDX: "
-    SDB_16BPP:      db   "In 16 BPP Video Mode!"
     SDB_EDX_VALUE:  db   8 dup(0),0ah,0dh,0
+    SDB_16BPP:      db   "In 16 BPP Video Mode!",0ah,0dh,0
+    SDB_800_256C:   db   "In 800*600 256 Colors Video Mode!",0ah,0dh
+                    db   "Found VBE Protected Mode Interface in:",0
+    SDB_1024_256C:  db   "In 1024*768 256 Colors Video Mode!",0ah,0dh,0
     DIV0:           db   "DIV 0!!!",0
 %endif
             

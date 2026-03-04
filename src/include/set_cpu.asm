@@ -75,12 +75,26 @@
                 serial_print CPUVendor_Info
             %endif
     
-    call dis_window_basic_info
-    call dis_window_function_info
-    call dis_window_clock_info
+    ;call dis_window_basic_info
+    ;call dis_window_function_info
+    ;call dis_window_clock_info
+
+    beeping:
+    %if enable_beep = 1
+        sound #g3,1,0
+        sound d4,1,1
+        sound d4,1,2
+        sound d4,1,3
+        sound c4,1,2
+        sound b3,1,1
+        sound c4,1,0
+        sound d4,1,3
+        sound d4,1,2
+        sound g3,1,0
+    %endif
     
-        dis_freq:   
-            sti
-            call refresh_freq
-        jmp dis_freq
+    dis_freq:   
+        sti
+        call refresh_freq
+    jmp dis_freq
             

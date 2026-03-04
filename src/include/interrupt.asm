@@ -111,7 +111,7 @@ section .text
             cmp ax,0
             jne testing_MSR
             mov al,0E1h                     ;显示蓝屏
-            call clean_screen 
+            call dword [clean_screen]
             pop ebx
             mov eax,ebx
             ror eax,24d
@@ -170,7 +170,7 @@ section .text
             cmp ax,0
             jne testing_MSR
             mov al,0E1h                     ;显示蓝屏
-            call clean_screen 
+            call dword [clean_screen]
             pop ebx
             mov eax,ebx
             ror eax,24d
@@ -215,7 +215,7 @@ section .text
             %endif        
             SUB ESP,4h
             mov al,0E1h                     ;显示蓝屏
-            call clean_screen 
+            call dword [clean_screen]
             pop ebx
             mov eax,ebx
             ror eax,24d
