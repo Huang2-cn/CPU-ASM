@@ -23,6 +23,10 @@ wid_basic_info:
         at wid_str.next_wid dd 0
     iend
 data_basic_info:
+
+
+
+
 CPU_INFO:           db  "CPU infomation",0 
 CPUVendor_Info:     db  "Vendor: "
 Vendor_name:        db  8 dup (0)
@@ -48,4 +52,4 @@ CPU_Stepping:       db  0
 
 CPU_CODE_NAME_Info: db  "Code name: "
 CPU_CODE_NAME:      db  "Unknown Code name."
-                    db  16 dup (0)    
+                    db  16 dup (0)
