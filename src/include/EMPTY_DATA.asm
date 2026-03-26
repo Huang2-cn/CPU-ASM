@@ -17,4 +17,5 @@ CPU_FUNCTION:       db 1024 dup (0)
     PMI_ADDR:       dd 0
     PMI_LEN:        db 0
     PMI:            
+windows_chain:      db 8192 dup (0)
 EMPTY_MEM_END:

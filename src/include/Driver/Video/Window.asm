@@ -4,4 +4,7 @@
 ;窗口关闭时，closed=1，上一个表项指向下一个表项
 ;窗口移至最前时，上一个表项指向下一个表项，最后一个表项指向其，其下一个表项为0
 create_win:         ;创建一个窗口
-    
+    pushad
+        mov esi,windows_chain
+    popad
+ret

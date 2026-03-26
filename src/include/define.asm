@@ -2,7 +2,7 @@
 %include "pitch.asm"            ;蜂鸣器曲调定义
 
 enable_beep equ 1        ;启用蜂鸣器,1=启用
-serial_debug equ 1       ;串口调试,1=启用
+serial_debug equ 0       ;串口调试,1=启用
 serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 
 %if serial_debug = 1

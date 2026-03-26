@@ -73,6 +73,7 @@ struc wid_str                       ;窗口控件:字符串
 endstruc
         
 struc win_chain
+    .valid       resw    1           ;有效位，是0ABCDh代表该表有效
     .closed      resb    1           ;是否已关闭
     .visible     resb    1           ;是否可视(最小化)，暂时未使用
     .x           resw    1           ;左上角相对于屏幕的位置,x
