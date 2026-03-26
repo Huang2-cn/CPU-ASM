@@ -23,31 +23,7 @@ DMOD:               dw  0
                     
 Function_INFO:      db  0,"Function infomation",0ah,0dh,0     
 Clock_INFO:         db  0,"Clock infomation",0ah,0dh,0                    
-CPUVendor_Info:     db  "Vendor: "
-Vendor_name:        db  8 dup (0)
-CPU_Specification:  db  "Specification: "
-Specification_name: db  "CPU NOT SUPPORT THIS DETECTION."
-                    db  18 dup(0)
-CPU_Family_Info:    db  "Family: "
-CPU_Family:         db  0
-                    db  "  Model: "
-CPU_Model:          db  0
-                    db  "  EXT. Family: "
-CPU_EXT_Family:     dw  0
-                    db  "  EXT. Model: "
-CPU_EXT_Model:      db  0
-                    db  "  Display Model: "
-CPU_Dis_Model:      dw  0
-                    db  "  Display Family: "
-CPU_Dis_Family:     dw  0
-                    db  0ah,0dh
-                    db  "Stepping:  "
-CPU_Stepping:       db  0
-                    db  0
 
-CPU_CODE_NAME_Info: db  "Code name: "
-CPU_CODE_NAME:      db  "Unknown Code name."
-                    db  16 dup (0)    
                     
 CPU_TECH_Info:      db  "Technology: "
 CPU_TECH:           db  16 dup (0)    

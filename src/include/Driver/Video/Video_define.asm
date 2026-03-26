@@ -75,8 +75,8 @@ endstruc
 struc win_chain
     .closed      resb    1           ;是否已关闭
     .visible     resb    1           ;是否可视(最小化)，暂时未使用
-    .x           resb    1           ;左上角相对于屏幕的位置,x
-    .y           resb    1           ;同上,y
+    .x           resw    1           ;左上角相对于屏幕的位置,x
+    .y           resw    1           ;同上,y
     .attr        resd    1           ;应指向窗口属性结构体
     .pre_win     resd    1           ;指向上一个窗口
     .next_win    resd    1           ;指向下一个窗口
