@@ -5,11 +5,10 @@ win_basic_info:
         at win_attr.y,          dw 0ah
         at win_attr.w,          dw 780h
         at win_attr.h,          dw 80h
-        at win_attr.back,       dw 0
         at win_attr.widget,     dd wid_basic_info
         at win_attr.title,      dd CPU_INFO
     iend
-    
+
 wid_basic_info:
     istruc wid_str
         at wid_str.type,        db 1
@@ -25,6 +24,21 @@ data_basic_info:
 
 
 
+
+
+root_win:
+    istruc win_chain
+        at win_chain.type,      dw 0FD00h   ;哑节点
+        at win_chain.closed,    db 0ffh     ;不可关闭
+        at win_chain.visible,   db 0        ;不可见
+        at win_chain.x,         dw 0        
+        at win_chain.y,         dw 0
+        at win_chain.attr,      dd 0        ;没有属性
+        at win_chain.pre_win,   dd win_chain_buffer     ;虽然说理论这就是它自己的位置
+        at win_chain.next_win,  dd 0
+    iend
+    
+        
 
 CPU_INFO:           db  "CPU infomation",0 
 CPUVendor_Info:     db  "Vendor: "
