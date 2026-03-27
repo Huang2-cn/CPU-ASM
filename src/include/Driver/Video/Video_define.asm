@@ -50,8 +50,9 @@
         linrsvefieldpos         equ  vesa_data_base + 3dh
         maxpixelclock           equ  vesa_data_base + 3eh
 %define MAX_WINDOW 64
-%define video_buffer 1000000h
+%define video_buffer 100000h
 struc win_attr                      ;窗口属性
+    .valid       resw    1
     .x           resw    1           ;窗口默认左上角X,若为0ffffh则出现在默认位置
     .y           resw    1           ;窗口默认左上角Y
     .w           resw    1           ;宽度
@@ -73,7 +74,7 @@ struc wid_str                       ;窗口控件:字符串
 endstruc
         
 struc win_chain
-    .valid       resw    1           ;有效位，是0ABCDh代表该表有效
+    .type        resw    1           ;类型,FD00:哑节点,FD01:普通窗口
     .closed      resb    1           ;是否已关闭
     .visible     resb    1           ;是否可视(最小化)，暂时未使用
     .x           resw    1           ;左上角相对于屏幕的位置,x
@@ -81,4 +82,5 @@ struc win_chain
     .attr        resd    1           ;应指向窗口属性结构体
     .pre_win     resd    1           ;指向上一个窗口
     .next_win    resd    1           ;指向下一个窗口
+    .endian:
 endstruc
