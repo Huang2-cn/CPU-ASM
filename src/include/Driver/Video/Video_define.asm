@@ -50,7 +50,8 @@
         linrsvefieldpos         equ  vesa_data_base + 3dh
         maxpixelclock           equ  vesa_data_base + 3eh
 %define MAX_WINDOW 64
-%define win_chain_buffer 100000h
+%define win_chain_buffer    1000000h
+%define video_buffer        2000000h
 struc win_attr                      ;窗口属性
     .valid       resw    1
     .x           resw    1           ;窗口默认左上角X,若为0ffffh则出现在默认位置

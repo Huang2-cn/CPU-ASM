@@ -54,40 +54,41 @@
     54                              <2>         linrsvefieldpos         equ  vesa_data_base + 3dh
     55                              <2>         maxpixelclock           equ  vesa_data_base + 3eh
     56                              <2> %define MAX_WINDOW 64
-    57                              <2> %define win_chain_buffer 100000h
-    58                              <2> struc win_attr                      ;窗口属性
-    59 00000000 ????                <2>     .valid       resw    1
-    60 00000002 ????                <2>     .x           resw    1           ;窗口默认左上角X,若为0ffffh则出现在默认位置
-    61 00000004 ????                <2>     .y           resw    1           ;窗口默认左上角Y
-    62 00000006 ????                <2>     .w           resw    1           ;宽度
-    63 00000008 ????                <2>     .h           resw    1           ;高度
-    64 0000000A ????????            <2>     .widget      resd    1           ;指向窗口控件列表
-    65 0000000E ????????            <2>     .title       resd    1           ;指向窗口标题
-    66                              <2> endstruc
-    67                              <2> 
-    68                              <2> struc wid_str                       ;窗口控件:字符串
-    69 00000000 ??                  <2>     .type        resb    1           ;请务必保证为1,这标志这是个字符串!
-    70 00000001 ??                  <2>     .color       resb    1           ;字符串的前景色
-    71 00000002 ??                  <2>     .back        resb    1           ;字符串的背景色
-    72 00000003 ??                  <2>     .tran        resb    1           ;是否透明，若为真，背景色不生效
-    73 00000004 ????                <2>     .x           resw    1           ;控件左上角相对于窗口左上角的x位置
-    74 00000006 ????                <2>     .y           resw    1           ;同上,y
-    75                              <2>     ;不定义大小,由字符串长度及内容自动计算
-    76 00000008 ????????            <2>     .index       resd    1           ;字符串内容的指针
-    77 0000000C ????????            <2>     .next_wid    resd    1           ;下一个控件(0则无)
-    78                              <2> endstruc
-    79                              <2>         
-    80                              <2> struc win_chain
-    81 00000000 ????                <2>     .type        resw    1           ;类型,FD00:哑节点,FD01:普通窗口
-    82 00000002 ??                  <2>     .closed      resb    1           ;是否已关闭
-    83 00000003 ??                  <2>     .visible     resb    1           ;是否可视(最小化)，暂时未使用
-    84 00000004 ????                <2>     .x           resw    1           ;左上角相对于屏幕的位置,x
-    85 00000006 ????                <2>     .y           resw    1           ;同上,y
-    86 00000008 ????????            <2>     .attr        resd    1           ;应指向窗口属性结构体
-    87 0000000C ????????            <2>     .pre_win     resd    1           ;指向上一个窗口
-    88 00000010 ????????            <2>     .next_win    resd    1           ;指向下一个窗口
-    89                              <2>     .endian:
-    90                              <2> endstruc
+    57                              <2> %define win_chain_buffer    1000000h
+    58                              <2> %define video_buffer        2000000h
+    59                              <2> struc win_attr                      ;窗口属性
+    60 00000000 ????                <2>     .valid       resw    1
+    61 00000002 ????                <2>     .x           resw    1           ;窗口默认左上角X,若为0ffffh则出现在默认位置
+    62 00000004 ????                <2>     .y           resw    1           ;窗口默认左上角Y
+    63 00000006 ????                <2>     .w           resw    1           ;宽度
+    64 00000008 ????                <2>     .h           resw    1           ;高度
+    65 0000000A ????????            <2>     .widget      resd    1           ;指向窗口控件列表
+    66 0000000E ????????            <2>     .title       resd    1           ;指向窗口标题
+    67                              <2> endstruc
+    68                              <2> 
+    69                              <2> struc wid_str                       ;窗口控件:字符串
+    70 00000000 ??                  <2>     .type        resb    1           ;请务必保证为1,这标志这是个字符串!
+    71 00000001 ??                  <2>     .color       resb    1           ;字符串的前景色
+    72 00000002 ??                  <2>     .back        resb    1           ;字符串的背景色
+    73 00000003 ??                  <2>     .tran        resb    1           ;是否透明，若为真，背景色不生效
+    74 00000004 ????                <2>     .x           resw    1           ;控件左上角相对于窗口左上角的x位置
+    75 00000006 ????                <2>     .y           resw    1           ;同上,y
+    76                              <2>     ;不定义大小,由字符串长度及内容自动计算
+    77 00000008 ????????            <2>     .index       resd    1           ;字符串内容的指针
+    78 0000000C ????????            <2>     .next_wid    resd    1           ;下一个控件(0则无)
+    79                              <2> endstruc
+    80                              <2>         
+    81                              <2> struc win_chain
+    82 00000000 ????                <2>     .type        resw    1           ;类型,FD00:哑节点,FD01:普通窗口
+    83 00000002 ??                  <2>     .closed      resb    1           ;是否已关闭
+    84 00000003 ??                  <2>     .visible     resb    1           ;是否可视(最小化)，暂时未使用
+    85 00000004 ????                <2>     .x           resw    1           ;左上角相对于屏幕的位置,x
+    86 00000006 ????                <2>     .y           resw    1           ;同上,y
+    87 00000008 ????????            <2>     .attr        resd    1           ;应指向窗口属性结构体
+    88 0000000C ????????            <2>     .pre_win     resd    1           ;指向上一个窗口
+    89 00000010 ????????            <2>     .next_win    resd    1           ;指向下一个窗口
+    90                              <2>     .endian:
+    91                              <2> endstruc
      5                              <1> %include "pitch.asm"            ;蜂鸣器曲调定义
      6                              <2> pitch_C   equ 17243
      7                              <2> pitch_#C  equ 16278
@@ -1292,7 +1293,7 @@
     40                              <3> ;窗口移至最前时，上一个表项指向下一个表项，最后一个表项指向其，其下一个表项为0
     41                              <3> win_Initialize:
     42 00000823 60                  <3>     pushad
-    43 00000824 BF00001000          <3>         mov edi,win_chain_buffer
+    43 00000824 BF00000001          <3>         mov edi,win_chain_buffer
     44 00000829 BE[CB210000]        <3>         mov esi,root_win
     45 0000082E B914000000          <3>         mov ecx,win_chain.endian
     46                              <3>         WI_RW:
@@ -1305,7 +1306,7 @@
     53 00000843 C3                  <3> ret
     54                              <3> create_win:         ;创建一个窗口,esi指向窗口属性
     55 00000844 60                  <3>     pushad
-    56 00000845 BF00001000          <3>         mov edi,win_chain_buffer
+    56 00000845 BF00000001          <3>         mov edi,win_chain_buffer
     57                              <3>         check_win_chain:     
     58 0000084A 803FFD              <3>             cmp [edi],byte 0FDh                 ;检查是否是有效表项
     59 0000084D 750B                <3>                 jne create_chain                ;不是则在当前位置创建表
@@ -4281,7 +4282,7 @@
    240 000021CF 0000                <3>         at win_chain.x,         dw 0        
    241 000021D1 0000                <3>         at win_chain.y,         dw 0
    242 000021D3 00000000            <3>         at win_chain.attr,      dd 0        ;没有属性
-   243 000021D7 00001000            <3>         at win_chain.pre_win,   dd win_chain_buffer     ;虽然说理论这就是它自己的位置
+   243 000021D7 00000001            <3>         at win_chain.pre_win,   dd win_chain_buffer     ;虽然说理论这就是它自己的位置
    244 000021DB 00000000            <3>         at win_chain.next_win,  dd 0
    245                              <3>     iend
    246                              <3>     
