@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
 	fprintf(fp, "compile_info:\n");
 	fprintf(fp, "db \"Compiled on:\"\n");
 	fprintf(fp, "db \"%s\",20h\n", date_str);
-	fprintf(fp, "db \"at %s\"\n", time_str);
-	fprintf(fp, "db \"VER %d.%d.%d\",0ah,0dh\n", major, minor, patch);
+	fprintf(fp, "db \"at %s VER \"\n", time_str);
+	fprintf(fp, "db \"%d.%d.%d\",0ah,0dh\n", major, minor, patch);
 	fprintf(fp, "db \"Copyright (c) Huang2.cn\" ,0ah,0dh,0\n");
 
 	fclose(fp);
