@@ -40,7 +40,7 @@ root_win:
     
         
 
-CPU_INFO:           db  "CPU infomation",0 
+CPU_INFO:           db  0,"CPU infomation",0 
 CPUVendor_Info:     db  "Vendor: "
 Vendor_name:        db  8 dup (0)
 CPU_Specification:  db  "Specification: "

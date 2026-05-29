@@ -83,14 +83,14 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
         mov bx,1
         mov bp,4
         call dword [rectangle]
-        mov eax,%1
-        add eax,20
-        mov [print_X],eax
-        mov eax,%2
-        mov [print_Y],eax
-        mov eax,%1
-        add eax,2
-        mov [line_start],eax
+        mov bx,%1
+        add ebx,20
+        mov [print_X],ebx
+        mov bx,%2
+        mov [print_Y],ebx
+        mov bx,%1
+        add ebx,2
+        mov [line_start],ebx
         printc 0FFh,%5
         mov al,07h
         mov cx,%1

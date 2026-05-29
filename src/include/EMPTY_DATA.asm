@@ -13,6 +13,8 @@ CPUVendor:          dd  0,0,0
     idt:
         db 2048 dup(0)              ;初始化中断描述符表空间
     temp:           db  128 dup (0)   
+    win_chain_buffer:
+        db   MAX_WINDOW*win_chain.endian dup(0) 
 CPU_FUNCTION:       db 1024 dup (0)
     PMI_ADDR:       dd 0
     PMI_LEN:        db 0
