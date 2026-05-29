@@ -95,6 +95,7 @@
     
     dis_freq:   
         sti
+        call ref_scr
         call refresh_freq
     jmp dis_freq
             

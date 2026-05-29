@@ -2,7 +2,7 @@
 %include "pitch.asm"            ;蜂鸣器曲调定义
 
 enable_beep equ 1        ;启用蜂鸣器,1=启用
-serial_debug equ 1       ;串口调试,1=启用
+serial_debug equ 0       ;串口调试,1=启用
 serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 
 %if serial_debug = 1
@@ -35,24 +35,74 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 
 %macro draw_window 5 ;显示窗口框架 draw_window 起始X,起始Y,长,宽,标题指针
     pushad
-        fill_rectangle 0e0h,%1 - 1,%2 - 1,%3 + 2,%4 + 2     ;主体框架
-        fill_rectangle 0ffh,%1,%2,%3,%4     ;主体框架 
+        mov al,0e0h
+        mov ecx,%1
+        dec ecx
+        mov edx,%2
+        dec edx
+        mov ebx,%3
+        add ebx,2
+        mov ebp,%4
+        add ebp,5
+        call dword [rectangle]              ;主体外框架
+        mov al,0ffh
+        mov ecx,%1
+        mov edx,%2
+        mov ebx,%3
+        mov ebp,%4
+        call dword [rectangle]
         push eax  
         mov eax,%4         
         mov [window_lenth],eax
         sub eax,4
         mov [line_lenth],eax
         pop eax
-        fill_rectangle 010h,%1 + 4,%2 + 4,12,12     ;LOGO 
-        fill_rectangle 0F8h,%1 + 6,%2 + 6,8,8
-        fill_rectangle 010h,%1 + 8,%2 + 13,1,4
-        mov [print_X],dword %1 + 20
-        mov [print_Y],dword %2
-        mov [line_start],dword %1 + 2
+        mov al,010h
+        mov ecx,%1
+        add ecx,4
+        mov edx,%2
+        add edx,4
+        mov ebx,12
+        mov ebp,12
+        call dword [rectangle]      ;绘制LOGO
+        mov al,0f8h
+        mov ecx,%1
+        add ecx,6
+        mov edx,%2
+        add edx,6
+        mov ebx,8
+        mov ebp,8
+        call dword [rectangle]
+        mov al,010h
+        mov ecx,%1
+        add ecx,8
+        mov edx,%2
+        add edx,13
+        mov ebx,1
+        mov ebp,4
+        call dword [rectangle]
+        mov eax,%1
+        add eax,20
+        mov [print_X],eax
+        mov eax,%2
+        mov [print_Y],eax
+        mov eax,%1
+        add eax,2
+        mov [line_start],eax
         printc 0FFh,%5
-        fill_rectangle 07h,%1,%2 + 18,1,%4
-        mov [print_X],dword %1 + 2
-        mov [print_Y],dword %2 + 20
+        mov al,07h
+        mov ecx,%1
+        mov edx,%2
+        add edx,18
+        mov ebx,1
+        mov ebp,%4
+        call dword [rectangle]
+        mov eax,%1
+        add eax,2
+        mov [print_X],eax
+        mov eax,%2
+        add eax,20
+        mov [print_Y],eax
     popad
 %endmacro
 

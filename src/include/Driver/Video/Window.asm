@@ -3,6 +3,40 @@
 ;窗口创建时，遍历链表内存区域，寻找closed=1的表项，若存在则覆盖，不存在则在最后创建新表项，遍历表，将最后一个表项指向其
 ;窗口关闭时，closed=1，上一个表项指向下一个表项
 ;窗口移至最前时，上一个表项指向下一个表项，最后一个表项指向其，其下一个表项为0
+ref_scr:
+    pushad
+        mov al,[background]
+        call [clean_screen]
+        mov esi,win_chain_buffer
+        drw_win:                    ;绘制窗口
+            %if serial_debug = 1
+                push eax
+                push esi
+                    mov eax,esi
+                    mov esi,SDB_WIN_POS
+                    call dword_hex
+                    serial_print SDB_REF_WIN
+                pop esi
+                pop eax
+            %endif    
+            cmp [esi+win_chain.type],dword 0FD01h       ;判断是否是有效表项
+            jne next_win                                ;否则下一表项
+            cmp [esi+win_chain.closed],byte 1           ;判断是否已关闭
+            je ref_scr_err
+            draw_window [edi+win_attr.x],[edi+win_attr.y],[edi+win_attr.w],[edi+win_attr.h],[edi+win_attr.title]
+                                                        ;绘制框架
+            ;控件绘制等一下写
+            
+        next_win:
+            
+            mov esi,[esi+win_chain.next_win]
+            cmp esi,0
+        jne drw_win
+    popad
+ret
+ref_scr_err:            ;遇到错误
+
+    
 win_Initialize:
     pushad
         mov edi,win_chain_buffer
@@ -10,9 +44,9 @@ win_Initialize:
         mov ecx,win_chain.endian
         WI_RW:
             mov al,[esi]
-            stosb
+            stosb                   ;把哑节点复制到缓冲区
         loop WI_RW 
-        mov esi,win_basic_info
+        mov esi,win_basic_info      ;创建basic_info窗口
         call create_win
     popad
 ret

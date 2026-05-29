@@ -84,20 +84,6 @@ pushad
     cmp ebx,0
         je set_video_800_256_failure
     call colorful_palette
-    xor ecx,ecx
-    mov esi,[PMI_ADDR]
-    mov cx,[PMI_LEN]
-    mov edi,PMI
-    copy_PMI:       ;将PMI移入内存
-        mov eax,[esi]
-        stosb
-        inc esi
-    loop copy_PMI
-    xor ebx,ebx
-    mov bx,[PMI]
-    mov eax,PMI
-    add eax,ebx         ;计算Function 4F05的32位入口地址
-    mov [sel_bank],eax
     
     
         
