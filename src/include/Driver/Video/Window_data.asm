@@ -36,6 +36,7 @@ root_win:
         at win_chain.attr,      dd 0        ;没有属性
         at win_chain.pre_win,   dd win_chain_buffer     ;虽然说理论这就是它自己的位置
         at win_chain.next_win,  dd 0
+        at win_chain.dirty,     db 1        ;默认需要重绘
     iend
     
         

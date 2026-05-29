@@ -81,5 +81,6 @@ struc win_chain
     .attr        resd    1           ;应指向窗口属性结构体
     .pre_win     resd    1           ;指向上一个窗口
     .next_win    resd    1           ;指向下一个窗口
+    .dirty       resb    1           ;脏标记
     .endian:
 endstruc
