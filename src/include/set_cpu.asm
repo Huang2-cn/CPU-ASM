@@ -92,7 +92,7 @@
         sound d4,1,2
         sound g3,1,0
     %endif
-    
+        call Win_Initialize
     dis_freq:   
         sti
         call ref_scr

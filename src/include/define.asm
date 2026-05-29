@@ -1,8 +1,8 @@
 %include "Driver\Video\Video_define.asm"     ;视频内存位置定义
 %include "pitch.asm"            ;蜂鸣器曲调定义
 
-enable_beep equ 1        ;启用蜂鸣器,1=启用
-serial_debug equ 0       ;串口调试,1=启用
+enable_beep equ 0        ;启用蜂鸣器,1=启用
+serial_debug equ 1       ;串口调试,1=启用
 serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 
 %if serial_debug = 1
@@ -35,51 +35,53 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 
 %macro draw_window 5 ;显示窗口框架 draw_window 起始X,起始Y,长,宽,标题指针
     pushad
+        xor ebx,ebx
+        xor ecx,ecx
+        xor edx,edx
+        xor ebp,ebp
         mov al,0e0h
-        mov ecx,%1
-        dec ecx
-        mov edx,%2
-        dec edx
-        mov ebx,%3
-        add ebx,2
-        mov ebp,%4
-        add ebp,5
+        mov cx,%1
+        dec cx
+        mov dx,%2
+        dec dx
+        mov bx,%3
+        add bx,2
+        mov bp,%4
+        add bp,2
         call dword [rectangle]              ;主体外框架
         mov al,0ffh
-        mov ecx,%1
-        mov edx,%2
-        mov ebx,%3
-        mov ebp,%4
-        call dword [rectangle]
-        push eax  
+        mov cx,%1
+        mov dx,%2
+        mov bx,%3
+        mov bp,%4
+        call dword [rectangle] 
         mov eax,%4         
         mov [window_lenth],eax
         sub eax,4
         mov [line_lenth],eax
-        pop eax
         mov al,010h
-        mov ecx,%1
-        add ecx,4
-        mov edx,%2
-        add edx,4
-        mov ebx,12
-        mov ebp,12
+        mov cx,%1
+        add cx,4
+        mov dx,%2
+        add dx,4
+        mov bx,12
+        mov bp,12
         call dword [rectangle]      ;绘制LOGO
         mov al,0f8h
-        mov ecx,%1
-        add ecx,6
-        mov edx,%2
-        add edx,6
-        mov ebx,8
-        mov ebp,8
+        mov cx,%1
+        add cx,6
+        mov dx,%2
+        add dx,6
+        mov bx,8
+        mov bp,8
         call dword [rectangle]
         mov al,010h
-        mov ecx,%1
-        add ecx,8
-        mov edx,%2
-        add edx,13
-        mov ebx,1
-        mov ebp,4
+        mov cx,%1
+        add cx,8
+        mov dx,%2
+        add dx,13
+        mov bx,1
+        mov bp,4
         call dword [rectangle]
         mov eax,%1
         add eax,20
@@ -91,11 +93,11 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
         mov [line_start],eax
         printc 0FFh,%5
         mov al,07h
-        mov ecx,%1
-        mov edx,%2
-        add edx,18
-        mov ebx,1
-        mov ebp,%4
+        mov cx,%1
+        mov dx,%2
+        add dx,18
+        mov bx,1
+        mov bp,%4
         call dword [rectangle]
         mov eax,%1
         add eax,2
