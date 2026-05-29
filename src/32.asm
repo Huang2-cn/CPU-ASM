@@ -87,23 +87,8 @@ main_32:
             mov al,1011b
             out dx,al
                 %if serial_debug = 1
-                    pushad
-                    
-                    mov eax,[video_base_addr]
-                    mov esi,SDB_TEMP
-                    call dword_hex
-                    
-
-                    mov bx,[DMOD]
-                    mov al,bh
-                    call hex2ascii
-                    mov [SDB_CDM_VALUE],ax   
-                    mov al,bl                 
-                    call hex2ascii
-                    mov [SDB_CDM_VALUE+2],ax
                     serial_print SDB_INFO
-                    serial_print SDB_CDM
-                    popad
+                    serial_print compile_info
                 %endif
                 call load_driver_1024_256
                     cmp eax,1           ;判断设定是否成功
@@ -113,6 +98,14 @@ main_32:
                 jne FINISH_LOAD_DRIVER
                 call load_driver_800_256
             FINISH_LOAD_DRIVER:
+                %if serial_debug = 1
+                    pushad
+                        mov eax,[video_base_addr]
+                        mov esi,SDB_TEMP
+                        call dword_hex
+                        serial_print SDB_VADDR
+                    popad
+                %endif
             %include 'ACPI.asm'
             sti                 ;启用中断
             %include "set_cpu.asm"
@@ -135,6 +128,7 @@ chars:
 %include "ASCII.asm"
 ;各种描述符
 %include "discribe_table.asm"
+%include "compile_info.asm"
 align 4
 DB 'ENDC'               ;结束标志，用于16位加载器
 ;以下都将是待分配的内存空间，不需要加载,由程序进行初始化

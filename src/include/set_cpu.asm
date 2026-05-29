@@ -73,6 +73,7 @@
     Corp_Process_fin:
             %if serial_debug = 1
                 serial_print CPUVendor_Info
+                serial_print SDB_NEXT_LINE
             %endif
     
     ;call dis_window_basic_info

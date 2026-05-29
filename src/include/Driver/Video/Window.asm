@@ -7,6 +7,23 @@ ref_scr:
     pushad
         mov esi,win_chain_buffer
         drw_win:                    ;绘制窗口
+            cmp [esi+win_chain.type], word 0FD00h        ;判断是否是根表项
+            jne drw_win_pass_root
+                cmp [esi+win_chain.dirty], byte 1       ;判断桌面是否需要重绘 
+                jne drw_win_pass_root
+                    mov al,[background]
+                    call [clean_screen]
+                    mov [esi+win_chain.dirty], byte 0
+                    %if serial_debug = 1
+                        serial_print SDB_REF_DESK
+                    %endif    
+            drw_win_pass_root:
+            cmp [esi+win_chain.type], word 0FD01h        ;判断是否是有效表项
+            jne next_win                                ;否则下一表项
+            cmp [esi+win_chain.closed], byte 1           ;判断是否已关闭
+            je ref_scr_err
+            cmp [esi+win_chain.dirty], byte 1           ;判断窗口是否需要重绘 
+            jne next_win                                
             %if serial_debug = 1
                 push eax
                 push esi
@@ -17,26 +34,15 @@ ref_scr:
                 pop esi
                 pop eax
             %endif    
-            cmp [esi+win_chain.type], word 0FD00h        ;判断是否是根表项
-            jne drw_win_pass_root
-                cmp [esi+win_chain.dirty], byte 1       ;判断桌面是否需要重绘 
-                jne drw_win_pass_root
-                    mov al,[background]
-                    call [clean_screen]
-                    mov [esi+win_chain.dirty], byte 0
-            drw_win_pass_root:
-            cmp [esi+win_chain.type], word 0FD01h        ;判断是否是有效表项
-            jne next_win                                ;否则下一表项
-            cmp [esi+win_chain.closed], byte 1           ;判断是否已关闭
-            je ref_scr_err
-            cmp [esi+win_chain.dirty], byte 1           ;判断窗口是否需要重绘 
-            jne next_win                                
             mov edi,[esi+win_chain.attr]
             draw_window [edi+win_attr.x],[edi+win_attr.y],[edi+win_attr.h],[edi+win_attr.w],[edi+win_attr.title]
                                                         ;绘制框架
             ;控件绘制等一下写
             
             mov [esi+win_chain.dirty], byte 0           ;干净了
+            %if serial_debug = 1
+                    serial_print SDB_SUC
+            %endif  
             
         next_win:
             mov esi,[esi+win_chain.next_win]
@@ -45,6 +51,10 @@ ref_scr:
     popad
 ret
 ref_scr_err:            ;遇到错误
+    %if serial_debug = 1
+        serial_print SDB_FAIL
+    %endif
+jmp next_win
 
     
 Win_Initialize:

@@ -16,11 +16,6 @@ ACPI_RSDP_addr:     dd  0
 ACPI_VER:           db  'N'
                     
                     
-                    
-DMOD:               dw  0
-                    
-                    
-                    
 Function_INFO:      db  0,"Function infomation",0ah,0dh,0     
 Clock_INFO:         db  0,"Clock infomation",0ah,0dh,0                    
 
@@ -57,11 +52,10 @@ BUS_Freq:           dw  0
 %include "AMD_data.asm"
 %if serial_debug = 1
     ;如启用了串口调试的数据
+    ;没事别在非0结尾的地方插东西!!!!!!!
     SDB_INFO:       db   "Serial Port DEBUG is Enabled.", 0ah,0dh
     SDB_VADDR:      db   "Video address Base:"
     SDB_TEMP:       db   8 dup (0),0ah,0dh,0
-    SDB_CDM:        db   "Current Display Mode:"
-    SDB_CDM_VALUE:  db   4 dup (0),0ah,0dh,0
     SDB_NORSDP:     db   "RSDP NOT FOUND." ,0ah,0dh,0
     SDB_AADDR:      db   "ACPI RSDP Found in:",0
     SDB_UD:         db   "#UD",0
@@ -90,9 +84,12 @@ BUS_Freq:           dw  0
                     db   "Found VBE Protected Mode Interface in:",0
     SDB_1024_256C:  db   "In 1024*768 256 Colors Video Mode!",0ah,0dh,0
     DIV0:           db   "DIV 0!!!",0
-    SDB_REF_WIN:    db   "Drawing window at:"
+    SDB_REF_DESK:   db   "Refresh Desktop." ,0ah,0dh,0
+    SDB_REF_WIN:    db   "Refresh window at:"
     SDB_WIN_POS:    db   8 dup(0),0ah,0dh,0
+    
     SDB_SUC:        db   "Succeed." ,0ah,0dh,0
-    SDB_FAIL:       db   "Fail." ,0ah,0dh,0
+    SDB_FAIL:       db   "Fail."            
+    SDB_NEXT_LINE:  db   0ah,0dh,0
 %endif
             

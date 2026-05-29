@@ -13,8 +13,6 @@ vfun_err:
 %include "Driver\Video\Window.asm"
 
 
-        
-
 ;===================================================== 
 
 
@@ -24,10 +22,6 @@ pushad
 popad
 ret            
                                 
-
-
-        
-
 
 
         printstr_back:           ;字符串显示函数，仅支持ASCII，esi指向字符串，al前景色，ah背景色，ecx左上角x，edx左上角y，除ecx=最后的字符位置右上角x其他均不变

@@ -14,6 +14,7 @@ if not exist temp\ (
 	)
 	
 del /f /s /q %~1>nul
+.\tool\VER.exe
 .\tool\nasm -f bin .\src\16.asm -o %T16Bit% -l .\temp\16.log -i .\src\include
 .\tool\nasm -f bin .\src\32.asm -o %T32Bit% -l .\temp\32.log -i .\src\include
 if not exist %T16Bit% (
