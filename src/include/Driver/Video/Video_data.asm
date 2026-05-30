@@ -3,8 +3,8 @@ line_start:         dd  21
 line_lenth:         dd  0
 video_screen_width: dd  0
 video_screen_height dd  0
-print_Y:            dd  0
 print_X:            dd  0
+print_Y:            dd  0
 pixel_color:        db  0
 video_base_addr:    dd  0
 video_endian_addr:  dd  0

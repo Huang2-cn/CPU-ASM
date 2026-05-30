@@ -99,12 +99,6 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
         mov bx,1
         mov bp,%4
         call dword [rectangle]
-        mov eax,%1
-        add eax,2
-        mov [print_X],eax
-        mov eax,%2
-        add eax,20
-        mov [print_Y],eax
     popad
 %endmacro
 

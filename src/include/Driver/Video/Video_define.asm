@@ -62,9 +62,7 @@ endstruc
 
 struc wid_str                       ;窗口控件:字符串
     .type        resb    1           ;请务必保证为1,这标志这是个字符串!
-    .color       resb    1           ;字符串的前景色
     .back        resb    1           ;字符串的背景色
-    .tran        resb    1           ;是否透明，若为真，背景色不生效
     .x           resw    1           ;控件左上角相对于窗口左上角的x位置
     .y           resw    1           ;同上,y
     ;不定义大小,由字符串长度及内容自动计算

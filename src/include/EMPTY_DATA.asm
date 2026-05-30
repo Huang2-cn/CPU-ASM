@@ -3,7 +3,7 @@ BOOTDISK:           db  0
 NUL:                dq  0
                     db  0
 CPU_Type:           db  0
-Freq_X:             dd  0
+Freq_X:             dd  0d
 Freq_Y:             dd  0 
 BCLK_X:             dd  0
 BCLK_Y:             dd  0

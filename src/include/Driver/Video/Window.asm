@@ -1,5 +1,5 @@
 ;根据链表确定窗口顺序，越靠近链表末尾越靠前
-;输出时，遍历链表，从后到前渲染
+;输出时，遍历链表，从后到前渲染脏窗口
 ;窗口创建时，遍历链表内存区域，寻找closed=1的表项，若存在则覆盖，不存在则在最后创建新表项，遍历表，将最后一个表项指向其
 ;窗口关闭时，closed=1，上一个表项指向下一个表项
 ;窗口移至最前时，上一个表项指向下一个表项，最后一个表项指向其，其下一个表项为0
@@ -37,13 +37,43 @@ ref_scr:
             mov edi,[esi+win_chain.attr]
             draw_window [edi+win_attr.x],[edi+win_attr.y],[edi+win_attr.h],[edi+win_attr.w],[edi+win_attr.title]
                                                         ;绘制框架
-            ;控件绘制等一下写
+                     
+            mov ebp,[edi+win_attr.widget]               ;控件绘制(没寄存器用了捏)
+            push esi                                   
+            draw_widget:
+                cmp [ebp],byte 1
+                jne draw_widget_not_str
+                    ;字符串
+                    xor eax,eax
+                    mov ax,[ebp+wid_str.x]
+                    add ax,[edi+win_attr.x]
+                    mov [print_X],eax
+                    mov [line_start],eax
+                    mov ax,[ebp+wid_str.y]
+                    add ax,[edi+win_attr.y]
+                    add ax,10h
+                    mov [print_Y],eax
+                    mov eax,[ebp+wid_str.index]
+                    mov ah,[ebp+wid_str.back]
+                    mov esi,[ebp+wid_str.index]
+                    mov al,[esi]
+                    inc esi
+                    call printstr_back
+                    mov ebp,[ebp+wid_str.next_wid]
+            cmp ebp,0
+            jne draw_widget
+            jmp draw_widget_finish
+            draw_widget_not_str:
+        
             
+            
+            draw_widget_finish:
+            pop esi    
             mov [esi+win_chain.dirty], byte 0           ;干净了
             %if serial_debug = 1
                     serial_print SDB_SUC
             %endif  
-            
+        
         next_win:
             mov esi,[esi+win_chain.next_win]
             cmp esi,0

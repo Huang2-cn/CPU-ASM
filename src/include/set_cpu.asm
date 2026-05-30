@@ -29,11 +29,6 @@
             
             
             
-
-
-            
-            
-            
             mov eax,1
             cpuid
             push eax
@@ -64,8 +59,6 @@
             
             pop eax
             push eax
-            
-            
             cmpstr CPUVendor,Intel,Intel_CPU
             cmpstr CPUVendor,AMD,AMD_CPU
             
@@ -79,7 +72,6 @@
     ;call dis_window_basic_info
     ;call dis_window_function_info
     ;call dis_window_clock_info
-
     beeping:
     %if enable_beep = 1
         sound #g3,1,0

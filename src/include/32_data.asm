@@ -83,7 +83,7 @@ BUS_Freq:           dw  0
     SDB_800_256C:   db   "In 800*600 256 Colors Video Mode!",0ah,0dh
                     db   "Found VBE Protected Mode Interface in:",0
     SDB_1024_256C:  db   "In 1024*768 256 Colors Video Mode!",0ah,0dh,0
-    DIV0:           db   "DIV 0!!!",0
+    DIV0:           db   "DIV 0!!!",0ah,0dh,0
     SDB_REF_DESK:   db   "Refresh Desktop." ,0ah,0dh,0
     SDB_REF_WIN:    db   "Refresh window at:"
     SDB_WIN_POS:    db   8 dup(0),0ah,0dh,0
