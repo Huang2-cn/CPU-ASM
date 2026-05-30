@@ -20,8 +20,7 @@ Function_INFO:      db  0,"Function infomation",0ah,0dh,0
 Clock_INFO:         db  0,"Clock infomation",0ah,0dh,0                    
 
                     
-CPU_TECH_Info:      db  "Technology: "
-CPU_TECH:           db  16 dup (0)    
+   
 CPU_Freq_Info:      db  'Frequency: ',0
 Freq:               db  'NaN',0,0,0
 MHz:                db  'MHz.       ',0

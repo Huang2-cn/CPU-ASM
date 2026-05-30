@@ -41,6 +41,8 @@ ref_scr:
             mov ebp,[edi+win_attr.widget]               ;控件绘制(没寄存器用了捏)
             push esi                                   
             draw_widget:
+            cmp ebp,0  
+            je draw_widget_finish
                 cmp [ebp],byte 1
                 jne draw_widget_not_str
                     ;字符串
@@ -60,9 +62,7 @@ ref_scr:
                     inc esi
                     call printstr_back
                     mov ebp,[ebp+wid_str.next_wid]
-            cmp ebp,0
-            jne draw_widget
-            jmp draw_widget_finish
+            jmp draw_widget
             draw_widget_not_str:
         
             

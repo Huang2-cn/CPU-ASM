@@ -93,7 +93,7 @@ section .text
                 serial_print SDB_TMR
                 serial_print SDB_OCC
             %endif
-            
+            mov al,20h
             out 20h,al          ;主控制
             popad
             sti
