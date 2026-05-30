@@ -88,13 +88,13 @@ section .text
         iretd
         INT_TIMER:
             pushad
-            %if serial_debug = 1
-                serial_print SDB_INT
-                serial_print SDB_TMR
-                serial_print SDB_OCC
-            %endif
-            mov al,20h
-            out 20h,al          ;主控制
+                %if serial_debug = 1
+                    serial_print SDB_INT
+                    serial_print SDB_TMR
+                    serial_print SDB_OCC
+                %endif
+                mov al,20h
+                out 20h,al          ;主控制
             popad
             sti
         iretd
