@@ -40,30 +40,12 @@ ref_scr:
                      
             mov ebp,[edi+win_attr.widget]               ;控件绘制(没寄存器用了捏)
             push esi                                   
-            draw_widget:
-            cmp ebp,0  
-            je draw_widget_finish
-                cmp [ebp],byte 1
-                jne draw_widget_not_str
-                    ;字符串
-                    xor eax,eax
-                    mov ax,[ebp+wid_str.x]
-                    add ax,[edi+win_attr.x]
-                    mov [print_X],eax
-                    mov [line_start],eax
-                    mov ax,[ebp+wid_str.y]
-                    add ax,[edi+win_attr.y]
-                    add ax,10h
-                    mov [print_Y],eax
-                    mov eax,[ebp+wid_str.index]
-                    mov ah,[ebp+wid_str.back]
-                    mov esi,[ebp+wid_str.index]
-                    mov al,[esi]
-                    inc esi
-                    call printstr_back
+                draw_widget_loop:
+                    call draw_widget
                     mov ebp,[ebp+wid_str.next_wid]
-            jmp draw_widget
-            draw_widget_not_str:
+            cmp ebp,0
+            jne draw_widget_loop
+            jmp draw_widget_finish
         
             
             
@@ -80,13 +62,41 @@ ref_scr:
         jne drw_win
     popad
 ret
+
 ref_scr_err:            ;遇到错误
     %if serial_debug = 1
         serial_print SDB_FAIL
     %endif
 jmp next_win
 
-    
+
+draw_widget:
+    pushad
+        cmp [ebp],byte 1                        ;判断是否是字符串
+        jne draw_widget_not_str             
+    ;字符串
+    xor eax,eax
+    mov ax,[ebp+wid_str.x]
+    add ax,[edi+win_attr.x]
+    mov [print_X],eax
+    mov [line_start],eax
+    mov ax,[ebp+wid_str.y]
+    add ax,[edi+win_attr.y]
+    add ax,10h
+    mov [print_Y],eax
+    mov eax,[ebp+wid_str.index]
+    mov ah,[ebp+wid_str.back]
+    mov esi,[ebp+wid_str.index]
+    mov al,[esi]
+    inc esi
+    call printstr_back
+    popad
+ret
+    draw_widget_not_str:
+    popad
+ret
+
+
 Win_Initialize:
     pushad
         mov edi,win_chain_buffer
