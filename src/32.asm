@@ -5,6 +5,7 @@ global main_32
 main_32:
     [bits 16]
     enter_32:
+        cli
         mov ax,90h 
         mov es,ax
         mov ax,0
@@ -42,7 +43,12 @@ main_32:
                     jmp initialize_MEM
                 initialize_MEM_Finished:
             %include "set_8259.asm"
-            
+            mov al,00110110b   ; 通道0, 读写高低字节, 模式3(方波), 二进制
+            out 43h,al         ; 发送控制字到 PIT 控制端口
+            mov ax,59255       ; 分频值
+            out 40h,al         ; 发送低字节
+            mov al,ah
+            out 40h,al         ; 发送高字节
             call test_keyboard
             mov al,60h
             out 64h,al          ;表示接下来会发送一个数据字节

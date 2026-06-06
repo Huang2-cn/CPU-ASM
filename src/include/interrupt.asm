@@ -49,7 +49,7 @@ section .text
             call set_idt_gate
             
             mov eax,20h                     ;时钟中断
-            mov edx,INT_TIMER
+            mov edx,INT_TIMER_UNSUPPORT_TSC
             call set_idt_gate
             
             mov eax,21h                     ;键盘中断
@@ -88,11 +88,41 @@ section .text
         iretd
         INT_TIMER:
             pushad
-                %if serial_debug = 1
-                    serial_print SDB_INT
-                    serial_print SDB_TMR
-                    serial_print SDB_OCC
-                %endif
+            cli
+            mov cl,[TSC_COUNT]
+            inc cl
+            mov [TSC_COUNT],cl
+            cmp cl,20d
+            jne INT_TIMER_LOW
+                    mov cl,0
+                    mov [TSC_COUNT],cl
+                    rdtsc                       ;获取TSC于EDX:EAX
+                    mov ebx,[TSC]
+                    mov ecx,[TSC_HIGH]
+                    mov [TSC],eax
+                    mov [TSC_HIGH],edx
+                    sub eax,ebx
+                    sbb edx,ecx
+                    mov ebx,1000000d
+                    div ebx
+                    mov [CPU_Freq],ax           ;CPU应该不会超过65GHz
+                    mov esi,Freq
+                    call hex2dec
+                    mov bl,[Multi_Freq]
+                    cmp bl,0                    ;若无法获取倍频
+                    je INT_TIMER_LOW            ;跳过
+                        div bx
+                        mov [BUS_Freq],ax
+                        mov esi,BCLK
+                        call hex2dec
+            INT_TIMER_LOW:
+            mov al,20h
+            out 20h,al          ;主控制
+            popad
+            sti
+        iretd
+        INT_TIMER_UNSUPPORT_TSC:
+            pushad
                 mov al,20h
                 out 20h,al          ;主控制
             popad
@@ -274,9 +304,9 @@ section .text
                 serial_print SDB_MOUSE
                 serial_print SDB_OCC
             %endif        
-            mov al,01100100b    ;OCW2，循环优先级，手动指定IRQ最低优先级(IRQ4)，EOI
+            mov al,01100100b    ;OCW2，手动指定IRQ最低优先级(IRQ4)，EOI
             out 0a0h,al         ;从8259A的控制端口
-            mov al,01100010b    ;OCW2，循环优先级，手动指定IRQ最低优先级(IRQ2)，EOI
+            mov al,01100010b    ;OCW2，手动指定IRQ最低优先级(IRQ2)，EOI
             out 20h,al          ;主8259A的控制端口
             popad
             sti
@@ -290,7 +320,7 @@ section .text
             %endif     
             in al,60h   
             
-            mov al,61h          ;OCW2，循环优先级，手动指定IRQ最低优先级（IRQ1），EOI
+            mov al,61h          ;OCW2，手动指定IRQ最低优先级（IRQ1），EOI
             out 20h,al          ;主控制
             popad
             sti

@@ -121,16 +121,18 @@
                         rol eax,1
                      JNC EIFUN_EDX
                      test edx,10000b                ;再次确定是否支持RDTSC
-                     jnz Support_tsc_code
-                        mov [Support_TSC],byte 0         ;不支持TSC
-                     Support_tsc_code:
+                     jz unsupport_tsc
+                        mov eax,20h                     ;支持TSC的时钟中断
+                        mov edx,INT_TIMER
+                        call set_idt_gate
+                     unsupport_tsc:
                      
                 ;获取倍频,务必放在最后
                 mov [Reading_MSR],byte 1            ;修改标志，以告知UD处理程序防止因不支持MSR198h寄存器导致的报错
                 mov ecx,198h
                 rdmsr
                 mov [Reading_MSR],byte 0
-                mov [Multi_Freq],ah
+                mov [Multi_Freq],ah                 ;存储的倍频的值
                 
                     %if serial_debug = 1
                         SDB_REG
@@ -138,6 +140,6 @@
                 mov al,ah
                 mov ah,0
                 mov esi,Multiplier
-                call hex2dec
+                call hex2dec                         ;存储倍频的ASCII
         jmp Corp_Process_fin
             
