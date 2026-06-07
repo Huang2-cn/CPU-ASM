@@ -4,7 +4,7 @@ win_func_info:
         at win_attr.y,          dw 120d
         at win_attr.w,          dw 620d
         at win_attr.h,          dw 90d
-        at win_attr.widget,     dd wid_func_info_vendor
+        at win_attr.widget,     dd 0
         at win_attr.title,      dd Function_INFO
     iend
 wid_func_info_vendor:
