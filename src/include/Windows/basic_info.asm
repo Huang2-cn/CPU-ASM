@@ -14,6 +14,8 @@ wid_basic_info_vendor:
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 4
         at wid_str.y,           dw 4
+        at wid_str.w            dw 20*8
+        at wid_str.h            dw 16
         at wid_str.index,       dd CPUVendor_Info
         at wid_str.next_wid,    dd wid_basic_info_Specification
     iend
@@ -25,6 +27,8 @@ wid_basic_info_Specification:
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 172
         at wid_str.y,           dw 4
+        at wid_str.w,           dw 8*48
+        at wid_str.h,           dw 16
         at wid_str.index,       dd CPU_Specification
         at wid_str.next_wid,    dd wid_basic_info_Family
     iend
@@ -35,6 +39,8 @@ wid_basic_info_Family:
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 4
         at wid_str.y,           dw 20
+        at wid_str.w,           dw 600
+        at wid_str.h,           dw 32
         at wid_str.index,       dd CPU_Family_Info
         at wid_str.next_wid,    dd wid_basic_info_CNAME
     iend
@@ -47,6 +53,8 @@ wid_basic_info_CNAME:
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 4
         at wid_str.y,           dw 52
+        at wid_str.w,           dw 320
+        at wid_str.h,           dw 16
         at wid_str.index,       dd CPU_CODE_NAME_Info
         at wid_str.next_wid,    dd 0
     iend

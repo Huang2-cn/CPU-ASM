@@ -65,7 +65,8 @@ struc wid_str                       ;窗口控件:字符串
     .back        resb    1           ;字符串的背景色
     .x           resw    1           ;控件左上角相对于窗口左上角的x位置
     .y           resw    1           ;同上,y
-    ;不定义大小,由字符串长度及内容自动计算
+    .w           resw    1           ;长
+    .h           resw    1           ;宽
     .index       resd    1           ;字符串内容的指针
     .next_wid    resd    1           ;下一个控件(0则无)
 endstruc
