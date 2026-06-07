@@ -12,5 +12,6 @@ root_win:
         at win_chain.dirty,     db 1        ;默认需要重绘
     iend
     
-%include "\Windows\basic_info.asm"
+%include "\Windows\Basic_info.asm"
+%include "\Windows\Func_info.asm"
 

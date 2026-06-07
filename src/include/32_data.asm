@@ -15,8 +15,7 @@ ER_EIP:             db  "?","?","?","?","?","?","?","?",0ah,0dh
 ACPI_RSDP_addr:     dd  0
 ACPI_VER:           db  'N'
                     
-                    
-Function_INFO:      db  0,"Function infomation",0ah,0dh,0     
+                       
 Clock_INFO:         db  0,"Clock infomation",0ah,0dh,0                    
 
                     

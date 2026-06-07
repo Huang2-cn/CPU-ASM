@@ -109,6 +109,8 @@ Win_Initialize:
         loop WI_RW 
         mov esi,win_basic_info      ;创建basic_info窗口
         call create_win
+        mov esi,win_func_info       ;创建Func_info窗口
+        call create_win
     popad
 ret
 create_win:         ;创建一个窗口,esi指向窗口属性
