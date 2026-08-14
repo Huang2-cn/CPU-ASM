@@ -77,7 +77,7 @@ section .text
             call set_idt_gate
             
             mov eax,2ch                     ;鼠标中断
-            mov edx,INT_MOUSE_TEMP          ;处理第一次鼠标初始化结束后的FA信号的中断，在该中断例程内会载入新的描述符
+            mov edx,INT_MOUSE               
             call set_idt_gate
         ret
 
@@ -281,21 +281,11 @@ section .text
             JMP $         
             
             
-        INT_MOUSE_TEMP:
-            pushad
-            xor eax,eax
-            in al,60h
-            mov eax,2ch                ;鼠标中断
-            mov edx,INT_MOUSE          ;正式描述符
-            call set_idt_gate
-            jmp EOI
-            
         INT_MOUSE:          ;鼠标中断
             pushad
             xor eax,eax
             xor ebx,ebx
             in al,60h
-            cmp al,0fah     ;忽略就绪信号
             je MOUSE_IRET
 
         MOUSE_IRET:

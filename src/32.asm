@@ -20,13 +20,15 @@ main_32:
         [bits 32]
         %include "32_sub.asm"   ;常规子程序  
     entered_32:   
-            mov ax,gdt_data-gdt_start
+            mov ax,gdt_stack-gdt_start
             mov ss,ax
+            mov ax,gdt_data-gdt_start
             mov ds,ax
             mov es,ax
             mov fs,ax
             mov gs,ax
-            mov esp,800h       ;防止覆盖
+            mov esp,4000h      
+            ;现在起,可以使用栈了
             xor ebx,ebx
             xor eax,eax
             xor ecx,ecx
@@ -42,26 +44,7 @@ main_32:
                     add esi,4
                     jmp initialize_MEM
                 initialize_MEM_Finished:
-            %include "set_8259.asm"
-            mov al,00110110b   ; 通道0, 读写高低字节, 模式3(方波), 二进制
-            out 43h,al         ; 发送控制字到 PIT 控制端口
-            mov ax,59255       ; 分频值
-            out 40h,al         ; 发送低字节
-            mov al,ah
-            out 40h,al         ; 发送高字节
-            call test_keyboard
-            mov al,60h
-            out 64h,al          ;表示接下来会发送一个数据字节
-            call test_keyboard
-            mov al,47h
-            out 60h,al          ;启用鼠标
-            call test_keyboard
-            mov al,0d4h
-            out 64h,al          ;告知下一个字节应发送到鼠标
-            call test_keyboard
-            mov al,0f4h
-            out 60h,al          ;激活鼠标电路
-            
+                mov [MEM_AVAILABLE],DWORD EMPTY_MEM_END         ;初始化可自由分配的内存位置
             ;启用串口
             mov dx,serial_port+3
                                 ;LCR寄存器
@@ -95,7 +78,50 @@ main_32:
                 %if serial_debug = 1
                     serial_print SDB_INFO
                     serial_print compile_info
+                    serial_print SDB_NEXT_LINE
                 %endif
+            mov al,00110110b    ;通道0, 读写高低字节, 模式3(方波), 二进制
+            out 43h,al          ;发送控制字到 PIT 控制端口
+            mov ax,59255        ;分频值
+            out 40h,al          ;发送低字节
+            mov al,ah
+            out 40h,al          ;发送高字节
+            mov al,0ADh         ;暂时禁用键盘
+            out 64h,al
+            mouse_resend:       ;重发跳转到这
+            call test_keyboard
+            mov al,60h
+            out 64h,al          ;表示接下来会发送一个数据字节
+            call test_keyboard
+            mov al,47h
+            out 60h,al          ;启用鼠标
+            call test_keyboard
+            mov al,0d4h
+            out 64h,al          ;告知下一个字节应发送到鼠标
+            call test_keyboard
+            mov al,0f4h
+            out 60h,al          ;激活鼠标电路
+            test_mouse:
+                in al,64h
+                test al,1b
+                je test_mouse
+                in al,60h
+                cmp al,0fah
+                je mouse_ack
+                cmp al,0feh
+                je mouse_resend
+                cmp bl,3                    ;若失败3次
+                jae mouse_fail               ;放弃
+                inc bl
+                jmp mouse_resend             ;要求重发
+            mouse_ack:                
+            %if serial_debug = 1
+                serial_print SDB_MOUSE_OK
+            %endif
+            mouse_fail:
+            mov al,0AEh
+            out 64h,al              ;恢复键盘
+            %include "set_8259.asm"
                 call load_driver_1024_256
                     cmp eax,1           ;判断设定是否成功
                 jne FINISH_LOAD_DRIVER

@@ -1,14 +1,15 @@
 load_driver_1024_256:
 pushad
     cli
+    push bp
     push ds
     push es
-    push ss
     push gs
     push fs
     push si
+    mov bp,ss
     jmp gdt_code_16-gdt_start:set_video_1024_256
-    set_video_1024_256:
+set_video_1024_256:
     [bits 16]
         mov ax,gdt_data_16-gdt_start
         mov ds,ax
@@ -53,7 +54,6 @@ pushad
             mov ax,4f03h ;检测当前显示模式
             int 10h
             
-
             lgdt [gdt_reg]
             mov eax,cr0         ;返回32位保护模式
             or eax,1
@@ -61,13 +61,14 @@ pushad
             jmp gdt_code-gdt_start:sv1024_256_return32
         [bits 32]
         sv1024_256_return32:
+            mov ss,bp
             lidt [idtr]
         pop si
         pop fs
         pop gs
-        pop ss
         pop ds
         pop es
+        pop bp
     sti
     cmp bx,4105h            ;确定是否成功设置
         jne set_video_1024_256_failure

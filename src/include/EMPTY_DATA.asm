@@ -1,5 +1,6 @@
 EMPTY_MEM:
 BOOTDISK:           db  0
+failure:            db  0
 NUL:                dq  0
                     db  0
 CPU_Type:           db  0
@@ -17,9 +18,11 @@ CPUVendor:          dd  0,0,0
         db 2048 dup(0)              ;初始化中断描述符表空间
     temp:           db  128 dup (0)   
     win_chain_buffer:
-        db   MAX_WINDOW*win_chain.endian dup(0) 
+        db   MAX_WINDOW*win_chain.size dup(0) 
 CPU_FUNCTION:       db 1024 dup (0)
     PMI_ADDR:       dd 0
     PMI_LEN:        db 0
-    PMI:            
-EMPTY_MEM_END:
+    PMI:
+STACK:              db 16384 dup(0)
+MEM_AVAILABLE:      dd 0
+EMPTY_MEM_END:          ;后面的内存均可自由分配

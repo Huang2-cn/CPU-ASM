@@ -25,6 +25,14 @@ gdt_data:
     db 10010010b        ;存在,DPL为0(2bit),非硬件系统段,不可执行,可读,向上扩展(数据段)
     db 11001111b        ;粒度4k,dword,非64位,0,段界限
     db 0                ;段基址
+STACK_BASE equ (STACK - $$) + 0x1000
+gdt_stack:              
+    dw 3FFFh            ;段界限 16KB
+    dw STACK_BASE & 0FFFFh
+    db (STACK_BASE >> 16) & 0FFh
+    db 10010010b        ;存在,DPL为0(2bit),非硬件系统段,不可执行,可读,向上扩展
+    db 01000000b        ;粒度1b,dword,非64位,0,段界限
+    db (STACK_BASE >> 24) & 0FFh
 gdt_code_16:            ;16位代码段描述符
     dw 0FFFFh           ;段界限 4G
     dw 0                ;段基址

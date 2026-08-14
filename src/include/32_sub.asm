@@ -129,7 +129,7 @@ section .text
             test_keyboard_loop:
             in al,64h
             and al,10b
-            cmp al,0
+            cmp al,0                    ;ibf
             jne test_keyboard_loop
                 pop ax
         ret
@@ -242,4 +242,19 @@ section .text
         and al,0fch         ;调整蜂鸣器计时器控制位
         out 61h,al          ;丢回去
         pop ax              ;还原现场
+   ret
+   
+   request_mem:             ;请求内存,调用时EAX=大小,返回EAX=地址   
+   push ebx
+   push ecx
+        mov ebx,[MEM_AVAILABLE]
+        mov ecx,eax
+        rqst_mem_clean:
+            mov [ebx+ecx-1],byte 0                ;清零
+        loop rqst_mem_clean
+        add eax,ebx
+        mov [MEM_AVAILABLE],eax
+        mov eax,ebx
+   pop ecx
+   pop ebx
    ret

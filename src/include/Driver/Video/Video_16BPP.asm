@@ -1,12 +1,13 @@
 load_driver_16BPP:
 pushad
     cli
+    push bp
     push ds
     push es
-    push ss
     push gs
     push fs
     push si
+    mov bp,ss
     jmp gdt_code_16-gdt_start:set_video_16bpp
     set_video_16bpp:
     [bits 16]
@@ -63,13 +64,14 @@ pushad
             jmp gdt_code-gdt_start:sv16bpp_return32
         [bits 32]
         sv16bpp_return32:
+            mov ss,bp
             lidt [idtr]
         pop si
         pop fs
         pop gs
-        pop ss
         pop ds
         pop es
+        pop bp
     sti
     cmp bx,4116h            ;确定是否成功设置
         jne set_video_16bpp_failure

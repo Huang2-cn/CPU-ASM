@@ -51,7 +51,8 @@ BUS_Freq:           dw  0
 %if serial_debug = 1
     ;如启用了串口调试的数据
     ;没事别在非0结尾的地方插东西!!!!!!!
-    SDB_INFO:       db   "Serial Port DEBUG is Enabled.", 0ah,0dh
+    SDB_INFO:       db   "-====CPU-ASM DEBUG INFOMATION====-",0ah,0dh
+                    db   "Serial Port DEBUG is Enabled.", 0ah,0dh,0
     SDB_VADDR:      db   "Video address Base:"
     SDB_TEMP:       db   8 dup (0),0ah,0dh,0
     SDB_NORSDP:     db   "RSDP NOT FOUND." ,0ah,0dh,0
@@ -85,7 +86,7 @@ BUS_Freq:           dw  0
     SDB_REF_DESK:   db   "Refresh Desktop." ,0ah,0dh,0
     SDB_REF_WIN:    db   "Refresh window at:"
     SDB_WIN_POS:    db   8 dup(0),0ah,0dh,0
-    
+    SDB_MOUSE_OK:   db   "Mouse initialization "
     SDB_SUC:        db   "Succeed." ,0ah,0dh,0
     SDB_FAIL:       db   "Fail."            
     SDB_NEXT_LINE:  db   0ah,0dh,0

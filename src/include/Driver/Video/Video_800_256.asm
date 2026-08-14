@@ -3,10 +3,10 @@ pushad
     cli
     push ds
     push es
-    push ss
     push gs
     push fs
     push si
+    mov bp,ss
     jmp gdt_code_16-gdt_start:set_video_800_256
     set_video_800_256:
     [bits 16]
@@ -70,11 +70,11 @@ pushad
             jmp gdt_code-gdt_start:sv800_256_return32
         [bits 32]
         sv800_256_return32:
+            mov ss,bp
             lidt [idtr]
         pop si
         pop fs
         pop gs
-        pop ss
         pop ds
         pop es
     sti
@@ -200,21 +200,11 @@ ret
             mov di,ax
             shl eax,10h
             mov ax,di
-            xor ecx,ecx
-            mov dx,0
-            mov cx,8           ;全部填充要7个窗口
-            write_vmem_800_256:
-                mov bx,0
-                call dword [sel_bank]       ;选择显存窗口
-                mov bx,1
-                call dword [sel_bank]       ;选择显存窗口
-                inc dx
-                mov edi,0A0000h
-                fill_bank_800_256:
-                    stosd
-                    cmp edi,0B0000h
-                jnae fill_bank_800_256
-            loop write_vmem_800_256
+            mov edi,[video_base_addr]
+            cls_800_256_loop:
+                stosd
+                cmp edi,[video_endian_addr]
+            jbe cls_800_256_loop
             cls_800_256_ret:
             pop ecx
             pop edi

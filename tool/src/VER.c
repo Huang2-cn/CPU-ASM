@@ -49,7 +49,15 @@ int main(int argc, char *argv[]) {
 	fprintf(fp, "db \"%s\",20h\n", date_str);
 	fprintf(fp, "db \"at %s VER \"\n", time_str);
 	fprintf(fp, "db \"%d.%d.%d\",0ah,0dh\n", major, minor, patch);
-	fprintf(fp, "db \"Copyright (c) Huang2.cn\" ,0ah,0dh,0\n");
+	fprintf(fp, "db \"Copyright (c) Huang2.cn\"\n");
+	fprintf(fp, "%%if serial_debug = 1\n");
+	fprintf(fp, "db \"[DEBUG VERSION]\"\n");
+	fprintf(fp, "%%endif\n");
+	fprintf(fp, "db 0\n");
+	fprintf(fp, "VERSION db \"Ver %d.%d.%d\",0", major, minor, patch);
+
+
+
 
 	fclose(fp);
 	printf("Updated to v%d.%d.%d  (%s %s)\n", major, minor, patch, date_str, time_str);

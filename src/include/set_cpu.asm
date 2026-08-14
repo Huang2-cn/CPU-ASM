@@ -1,4 +1,3 @@
-
             mov eax,0
             cpuid
             mov [CPUVendor],ebx
@@ -69,9 +68,9 @@
                 serial_print SDB_NEXT_LINE
             %endif
     
-    ;call dis_window_basic_info
-    ;call dis_window_function_info
-    ;call dis_window_clock_info
+;    call dis_window_basic_info
+;    call dis_window_function_info
+;    call dis_window_clock_info
     beeping:
     %if enable_beep = 1
         sound #g3,1,0
@@ -88,7 +87,8 @@
         call Win_Initialize
     dis_freq:   
         sti
-        call ref_scr
-        call refresh_freq
+        call ref_full_scr
+        mov ecx,1
+        call delay
     jmp dis_freq
             

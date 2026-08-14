@@ -58,6 +58,8 @@ struc win_attr                      ;窗口属性
     .h           resw    1           ;高度
     .widget      resd    1           ;指向窗口控件列表
     .title       resd    1           ;指向窗口标题
+    .load        resd    1           ;窗口被加载时执行的代码指针，0为没有
+    .size:
 endstruc
 
 struc wid_str                       ;窗口控件:字符串
@@ -69,6 +71,7 @@ struc wid_str                       ;窗口控件:字符串
     .h           resw    1           ;宽
     .index       resd    1           ;字符串内容的指针
     .next_wid    resd    1           ;下一个控件(0则无)
+    .size:
 endstruc
         
 struc win_chain
@@ -81,5 +84,5 @@ struc win_chain
     .pre_win     resd    1           ;指向上一个窗口
     .next_win    resd    1           ;指向下一个窗口
     .dirty       resb    1           ;脏标记
-    .endian:
+    .size:
 endstruc

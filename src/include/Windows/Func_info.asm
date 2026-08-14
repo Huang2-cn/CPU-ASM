@@ -7,6 +7,7 @@ win_func_info:
         at win_attr.widget,     dd 0
         at win_attr.title,      dd Function_INFO
     iend
+;勿忘逗号！！！
 wid_func_info_vendor:
     istruc wid_str
         at wid_str.type,        db 1

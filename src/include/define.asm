@@ -12,8 +12,10 @@ serial_port equ 3f8h     ;串口调试端口，3F8=COM1
 %endif
 
 %macro serial_print 1   ;格式:serial_print 字符串地址
+push esi
     mov esi,%1
     call serial_out
+pop esi
 %endmacro
 
 %macro SDB_REG 0

@@ -76,13 +76,13 @@ Calc_Intel_Dis_Model:   ;计算Intel_Display_Model
             Intel_Unknown_code_name:
             
             
-            
-        exam_Intel_function:
+            ;2026.7.29:看不懂自己写的东西了(悲
+        exam_Intel_function:                    
             mov eax,1h
             cpuid
             mov eax,1b
-            mov edi,CPU_FUNCTION
-            mov esi,Intel_function_ECX
+            mov edi,CPU_FUNCTION                
+            mov esi,Intel_function_ECX          
             EIFUN_TEST_ECX:
                 mov bl,028h
                 test ecx,eax

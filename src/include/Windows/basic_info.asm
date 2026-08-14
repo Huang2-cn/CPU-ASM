@@ -7,15 +7,14 @@ win_basic_info:
         at win_attr.widget,     dd wid_basic_info_vendor
         at win_attr.title,      dd CPU_INFO
     iend
-
 wid_basic_info_vendor:
     istruc wid_str
         at wid_str.type,        db 1
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 4
         at wid_str.y,           dw 4
-        at wid_str.w            dw 20*8
-        at wid_str.h            dw 16
+        at wid_str.w,           dw 20*8
+        at wid_str.h,           dw 16d
         at wid_str.index,       dd CPUVendor_Info
         at wid_str.next_wid,    dd wid_basic_info_Specification
     iend
@@ -44,8 +43,7 @@ wid_basic_info_Family:
         at wid_str.index,       dd CPU_Family_Info
         at wid_str.next_wid,    dd wid_basic_info_CNAME
     iend
-    
-    
+   
     
 wid_basic_info_CNAME:
     istruc wid_str

@@ -3,7 +3,7 @@
 ;窗口创建时，遍历链表内存区域，寻找closed=1的表项，若存在则覆盖，不存在则在最后创建新表项，遍历表，将最后一个表项指向其
 ;窗口关闭时，closed=1，上一个表项指向下一个表项
 ;窗口移至最前时，上一个表项指向下一个表项，最后一个表项指向其，其下一个表项为0
-ref_scr:
+ref_full_scr:
     pushad
         mov esi,win_chain_buffer
         drw_win:                    ;绘制窗口
@@ -38,14 +38,16 @@ ref_scr:
             draw_window [edi+win_attr.x],[edi+win_attr.y],[edi+win_attr.h],[edi+win_attr.w],[edi+win_attr.title]
                                                         ;绘制框架
                      
-            mov ebp,[edi+win_attr.widget]               ;控件绘制(没寄存器用了捏)
-            push esi                                   
+            mov ebx,[edi+win_attr.widget]               ;控件绘制
+            push esi      
+            test ebx,ebx
+            jz draw_widget_finish                         
                 draw_widget_loop:
                     call draw_widget
-                    mov ebp,[ebp+wid_str.next_wid]
-            cmp ebp,0
-            jne draw_widget_loop
-            jmp draw_widget_finish
+                    mov ebx,[ebx+wid_str.next_wid]
+                    test ebx,ebx
+                    jz draw_widget_finish
+                    jmp draw_widget_loop
         
             
             
@@ -62,31 +64,55 @@ ref_scr:
         jne drw_win
     popad
 ret
-
 ref_scr_err:            ;遇到错误
     %if serial_debug = 1
         serial_print SDB_FAIL
     %endif
 jmp next_win
 
+add_widget_str:         ;新建字符串控件到于一个窗口,调用时ESI=目标窗口属性,返回ESI=控件地址
+    push eax
+        add esi,win_attr.widget         ;现在esi指向下一个节点的指针(是指向指针!)
+        mov eax,[esi]
+        aws_find_endian:
+            cmp eax,0
+            je awsfe_found
+            cmp [eax],byte 1            ;字符串
+            jne awsfe_not_str
+                mov esi,eax
+                add esi,wid_str.next_wid    ;esi还是指向下一个节点的指针!!!
+                mov eax,[esi]
+                jmp aws_find_endian
+            awsfe_not_str:
+            ;暂时没有其它控件,要加的时候勿忘
+            
+            awsfe_found:
+            mov eax,wid_str.size
+            call request_mem            
+            mov [esi],eax                           ;将链表末尾指向这里
+            mov [eax],byte 1                        ;type为字符串
+            mov esi,eax                             ;返回值
+    pop eax
+ret
+
 
 draw_widget:
     pushad
-        cmp [ebp],byte 1                        ;判断是否是字符串
+        cmp [ebx],byte 1                        ;判断是否是字符串
         jne draw_widget_not_str             
     ;字符串
     xor eax,eax
-    mov ax,[ebp+wid_str.x]
+    mov ax,[ebx+wid_str.x]
     add ax,[edi+win_attr.x]
     mov [print_X],eax
     mov [line_start],eax
-    mov ax,[ebp+wid_str.y]
+    mov ax,[ebx+wid_str.y]
     add ax,[edi+win_attr.y]
     add ax,10h
     mov [print_Y],eax
-    mov eax,[ebp+wid_str.index]
-    mov ah,[ebp+wid_str.back]
-    mov esi,[ebp+wid_str.index]
+    mov eax,[ebx+wid_str.index]
+    mov ah,[ebx+wid_str.back]
+    mov esi,[ebx+wid_str.index]
     mov al,[esi]
     inc esi
     call printstr_back
@@ -101,7 +127,7 @@ Win_Initialize:
     pushad
         mov edi,win_chain_buffer
         mov esi,root_win
-        mov ecx,win_chain.endian-win_chain.type
+        mov ecx,win_chain.size-win_chain.type
         WI_RW:
             mov al,[esi]
             stosb                   ;把哑节点复制到缓冲区
@@ -121,7 +147,7 @@ create_win:         ;创建一个窗口,esi指向窗口属性
                 jne create_chain                ;不是则在当前位置创建表
             cmp [edi+win_chain.closed],byte 1   ;检查是否是已关闭的窗口
                 je create_chain                 ;是则在当前位置创建表
-            add edi,win_chain.endian            ;否则寻找下一表项  
+            add edi,win_chain.size            ;否则寻找下一表项  
                 jmp check_win_chain
 
         create_chain:
