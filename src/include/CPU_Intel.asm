@@ -74,7 +74,8 @@ Calc_Intel_Dis_Model:   ;计算Intel_Display_Model
                 jne EIF_TECH
             jmp exam_Intel_model_s
             Intel_Unknown_code_name:
-            
+               
+               
             
             ;2026.7.29:看不懂自己写的东西了(悲
         exam_Intel_function:                    
@@ -83,12 +84,14 @@ Calc_Intel_Dis_Model:   ;计算Intel_Display_Model
             mov eax,1b
             mov edi,CPU_FUNCTION                
             mov esi,Intel_function_ECX          
-            EIFUN_TEST_ECX:
+            EIFUN_TEST_ECX:                 ;循环比较位
                 mov bl,028h
-                test ecx,eax
-                jnz EITC_SUPPORT
-                    mov bl,0f9h
-                EITC_SUPPORT:
+                test ecx,eax                
+                jz EITC_NOT_SUPPORT
+                    ;如果支持
+                     
+                    ;为什么添加控件在这里就没效果呢
+                EITC_NOT_SUPPORT:
                 mov [edi],bl
                 inc edi
                 push eax
@@ -141,5 +144,6 @@ Calc_Intel_Dis_Model:   ;计算Intel_Display_Model
         mov ah,0
         mov esi,Multiplier
         call hex2dec                         ;存储倍频的ASCII
+        
 jmp Corp_Process_fin
             

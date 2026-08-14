@@ -139,6 +139,7 @@ main_32:
                     popad
                 %endif
             %include 'ACPI.asm'
+            call Win_Initialize ;初始化窗口管理系统
             sti                 ;启用中断
             %include "set_cpu.asm"
         endian:

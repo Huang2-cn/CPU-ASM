@@ -4,17 +4,17 @@ win_func_info:
         at win_attr.y,          dw 120d
         at win_attr.w,          dw 620d
         at win_attr.h,          dw 90d
-        at win_attr.widget,     dd 0
+        at win_attr.widget,     dd wid_func_info_Function
         at win_attr.title,      dd Function_INFO
     iend
 ;勿忘逗号！！！
-wid_func_info_vendor:
+wid_func_info_Function:
     istruc wid_str
         at wid_str.type,        db 1
         at wid_str.back,        db 0ffh
         at wid_str.x,           dw 4
         at wid_str.y,           dw 4
-        at wid_str.index,       dd CPUVendor_Info
+        at wid_str.index,       dd Win_func_Function
         at wid_str.next_wid,    dd 0
     iend
     
@@ -24,3 +24,4 @@ wid_func_info_vendor:
     
 
 Function_INFO:      db  0,"Function infomation",0ah,0dh,0  
+Win_func_Function:  db  0,"Supported Functions:",0 

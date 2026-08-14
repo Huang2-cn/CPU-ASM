@@ -63,6 +63,7 @@
             
             
     Corp_Process_fin:
+    
             %if serial_debug = 1
                 serial_print CPUVendor_Info
                 serial_print SDB_NEXT_LINE
@@ -84,7 +85,9 @@
         sound d4,1,2
         sound g3,1,0
     %endif
-        call Win_Initialize
+        ;添加字符串控件在这里就有效
+        
+
     dis_freq:   
         sti
         call ref_full_scr

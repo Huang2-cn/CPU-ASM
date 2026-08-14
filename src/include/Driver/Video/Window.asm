@@ -88,7 +88,7 @@ add_widget_str:         ;新建字符串控件到于一个窗口,调用时ESI=�
             
             awsfe_found:
             mov eax,wid_str.size
-            call request_mem            
+            call request_mem                        ;申请内存   
             mov [esi],eax                           ;将链表末尾指向这里
             mov [eax],byte 1                        ;type为字符串
             mov esi,eax                             ;返回值
