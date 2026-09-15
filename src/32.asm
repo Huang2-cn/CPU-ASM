@@ -6,6 +6,7 @@ main_32:
     [bits 16]
     enter_32:
         cli
+        
         mov ax,90h 
         mov es,ax
         mov ax,0
